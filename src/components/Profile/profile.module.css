@@ -1,0 +1,50 @@
+.container {
+  min-height: 60vh;
+}
+.background {
+  background-image: url("https://www.nomadicmatt.com/wp-content/uploads/2018/04/vietnamguide-2.jpg");
+  width: 100%;
+  height: 25vw;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 200px;
+  height: 200px;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.5);
+  object-fit: cover;
+  margin-left: 75px;
+}
+.info {
+  color: white;
+  text-align: center;
+  margin-left: 20px;
+}
+.info p {
+  margin-top: 5px;
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+.outlined {
+  width: 300px;
+  background-color: rgba(132, 180, 187, 17%) !important;
+  border-right: 2px solid #6dabb4 !important;
+  color: #6dabb4 !important;
+  font-weight: 600;
+  text-transform: capitalize !important;
+}
+.plain {
+  text-transform: capitalize !important;
+}
+.tabsLable {
+  color: black !important;
+  font-weight: 600;
+}
+.tabContent {
+  width: calc(100vw - 316px);
+  height: 100%;
+  background-color: rgba(132, 180, 187, 17%);
+}
