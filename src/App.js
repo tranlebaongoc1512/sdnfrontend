@@ -17,14 +17,14 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path='/' element={<Home />}></Route>
-          <Route path='/class' element={<Class />}></Route>
+          <Route path='/service' element={<Class />}></Route>
           <Route path='/teacher' element={<Teacher />}></Route>
 
         <Route path='/login' element={<Login />}></Route>
           <Route path='/register' element={<Register />}></Route>   
 
           <Route path='/profile' element={<Profile />}></Route>
-          <Route path='/class/:id' element={<ClassDetails />}></Route>
+          <Route path='/service/:id' element={<ClassDetails />}></Route>
         </Routes>
       </AuthProvider>
     </div>

@@ -122,6 +122,8 @@ const Profile = () => {
   const { fullName, image, role, email } = user;
 
   return (
+    <>
+    <Navigation/>
     <div className={styles.container}>
       <div className={styles.background}>
         <img className={styles.avatar} alt="Avatar" src={image} />
@@ -300,6 +302,8 @@ const Profile = () => {
         </div>
       )}
     </div>
+    <Footer/>
+    </>
   );
 };
 

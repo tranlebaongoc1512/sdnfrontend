@@ -404,14 +404,22 @@ const ClassDetails = () => {
   const { role } = user;
   const isMember = role === 'member';
 
+  const img = {
+    src: 'https://images.squarespace-cdn.com/content/v1/559d822ae4b0b0ab59484d42/1444777151238-AU8MXVDVG9JPWYTDZ36H/image-asset.jpeg'
+  }
+
   return (
     <>
+    <Navigation/>
     <Container sx={{ py: 8 }} maxWidth="xl" className="single">
       <Grid container spacing={4} className="details-row">
-        <Grid item xs={12} lg={8}>
+        <Grid item xs={12} lg={7}>
           <div className="single-content">
-            <Card>
-              <CardMedia component="img" image={classDetails.image} alt="Class" />
+            <Card style={{alignItems:'center', justifyItems: 'center'}}>
+              <CardMedia component="img" style={{width: '500px', height: '500px'}} 
+              // image={classDetails.image} 
+              src={img.src}
+              alt="Class" />
               <CardContent>
                 <Typography variant="h3" component="h3">
                   {classDetails.name}
@@ -421,50 +429,55 @@ const ClassDetails = () => {
           </div>
         </Grid>
 
-        <Grid item xs={12} lg={4}>
+        <Grid item xs={12} lg={5}>
           <Card>
             <CardContent>
               <Typography variant="h3" component="h3" className="widget-title">
-                Class Details:
+                Service Details:
               </Typography>
               <div className="category-widget">
                 <ul>
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Taught By:</strong> {classDetails.teacherName}
+                      <strong>Provider:</strong> {classDetails.teacherName}
                     </Typography>
                   </li>
                   <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Class Type:</strong> {classDetails.type}
+                      <strong>Service category:</strong> {classDetails.type}
                     </Typography>
                   </li>
                   <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Class Size:</strong> {classDetails.classSize}
+                      <strong>Description:</strong> {classDetails.classSize}
                     </Typography>
                   </li>
                   <br />
                   <li>
+                    <Typography variant="body2" style={{ float: 'left' }}>
+                      <strong>Price:</strong> {classDetails.classSize}
+                    </Typography>
+                  </li>
+                  {/* <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
                       <strong>Slots Left:</strong>{' '}
                       {classDetails.slotLeft > 0 ? classDetails.slotLeft : 'Fully Booked'}
                     </Typography>
-                  </li>
-                  <br />
+                  </li> */}
+                  {/* <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
                       <strong>When:</strong> {classDetails.date}
                     </Typography>
-                  </li>
-                  <br />
+                  </li> */}
+                  {/* <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
                       <strong>What Time:</strong> {classDetails.time}
                     </Typography>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
               <div className="guest-btns" style={{ margin: '0 auto' }}>
@@ -499,7 +512,7 @@ const ClassDetails = () => {
         </Grid>
       </Grid>
     </Container>
-    
+    <Footer/>
     </>
   );
 };

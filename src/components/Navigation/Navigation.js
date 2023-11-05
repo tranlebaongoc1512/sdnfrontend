@@ -21,7 +21,7 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 
-const pages = ['Home', 'Class', 'Teacher'];
+const pages = ['Home', 'Service', 'Teacher'];
 const settings = ['Profile'];
 
 function Navigation() {
@@ -75,7 +75,7 @@ function Navigation() {
                 textDecoration: 'none',
               }}
             >
-              FILM
+              BIRDS
             </Typography>
 
 
