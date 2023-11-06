@@ -21,11 +21,11 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 
-const pages = ['Home', 'Service', 'Teacher'];
+const pages = ['Home', 'Service'];
 const settings = ['Profile'];
 
 function Navigation() {
-  const { isAuthenticated, logout } = React.useContext(AuthContext);
+  const { isAuthenticated, userRole, logout } = React.useContext(AuthContext);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
 
   const handleOpenNavMenu = (event) => {
@@ -119,6 +119,36 @@ function Navigation() {
                       Register
                     </Button>
                   </div>
+                ) : userRole === "provider" ? (
+                  <Box>
+                    <Button
+                      color="inherit"
+                      component={Link}
+                      to={'/dashboard'}
+                      sx={{ mx: 1 }}
+                    >
+                      Dashboard
+                    </Button>
+                    {settings.map((setting, index) => (
+                      <Button
+                        key={index}
+                        color="inherit"
+                        component={Link}
+                        to={`/${setting.toLowerCase()}`}
+                        sx={{ mx: 1 }}
+                      >
+                        {setting}
+                      </Button>
+                    ))}
+                    <Button
+                      key="logout"
+                      color="inherit"
+                      onClick={logout}
+                      sx={{ mx: 1 }}
+                    >
+                      Logout
+                    </Button>
+                  </Box>
                 ) : (
                   <Box>
                     {settings.map((setting, index) => (

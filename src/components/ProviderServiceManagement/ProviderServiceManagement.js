@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Avatar, Backdrop, Box, Button, Fade, Modal, TextField, Typography, MenuItem } from '@mui/material';
 import {
     DataGrid,
@@ -10,6 +11,7 @@ import {
 } from '@mui/x-data-grid';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import Swal from 'sweetalert2';
 
 
 export default function ProviderServiceManagement() {
@@ -28,7 +30,7 @@ export default function ProviderServiceManagement() {
     }, [])
     const fetchProviderServicesData = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/providerService', {
+            const response = await fetch('http://localhost:8000/api/service/list', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,15 +43,21 @@ export default function ProviderServiceManagement() {
             } else {
                 // Handle error response
                 const errorData = await response.json();
-                alert(errorData.message);
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
             }
         } catch (error) {
-            alert(error.message);
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
         }
     };
     const fetchProviderServiceData = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/providerService/${id}`, {
+            const response = await fetch(`http://localhost:8000/api/service/detail/${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -62,17 +70,22 @@ export default function ProviderServiceManagement() {
                 setIsFetchProviderServiceData(true);
             } else {
                 const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
             }
         } catch (error) {
-            console.error(error);
-            alert('An error occurred while fetching providerService data.');
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
             setOpen(false);
         }
     };
     const fetchCategoriesList = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/category', {
+            const response = await fetch('http://localhost:8000/api/category/list', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,14 +94,19 @@ export default function ProviderServiceManagement() {
             });
             if (response.ok) {
                 const data = await response.json();
-                setCategoryList(data);
+                setCategoryList(data.categories);
             } else {
                 const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
             }
         } catch (error) {
-            console.error(error);
-            alert('An error occurred while fetching category data.');
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
             setOpen(false);
         }
     };
@@ -105,6 +123,52 @@ export default function ProviderServiceManagement() {
         fetchProviderServiceData(id);
         setOpen(true);
     };
+    const deleteProviderService = (id) => {
+        Swal.fire({
+            title: "Are you sure you want to delete this service?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteService(id)
+            }
+        });
+    };
+    const deleteService = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/service/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "This service has been deleted.",
+                    icon: "success"
+                });
+                fetchProviderServicesData()
+            } else {
+                // Handle error response
+                const errorData = await response.json();
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
+        }
+    }
     useEffect(() => {
         if (isFetchProviderServiceData) {
             formik.setValues({
@@ -127,7 +191,7 @@ export default function ProviderServiceManagement() {
         onSubmit: async (values) => {
             if (isEditMode) {
                 try {
-                    const response = await fetch(`http://localhost:8000/api/providerService/management/${providerServiceId}`, {
+                    const response = await fetch(`http://localhost:8000/api/service/update/${providerServiceId}`, {
                         method: 'PUT',
                         body: JSON.stringify(values),
                         headers: {
@@ -136,43 +200,56 @@ export default function ProviderServiceManagement() {
                         },
                     });
                     if (response.ok) {
-                        alert('ProviderService updated successfully');
+                        Swal.fire({
+                            title: "Service updated successfully",
+                            icon: "success"
+                        });
                         formik.resetForm();
                         fetchProviderServicesData(token)
                         setOpen(false);
                     } else {
                         const errorData = await response.json();
-                        alert(`Error: ${errorData.message}`);
+                        Swal.fire({
+                            icon: "error",
+                            title: errorData.message,
+                        });
                     }
                 } catch (error) {
-                    console.error(error);
-                    alert('An error occurred while updating the providerService.');
+                    Swal.fire({
+                        icon: "error",
+                        title: error.message,
+                    });
                 }
             } else {
                 try {
-                    // Convert date to the required format MM-dd-yyyy
-                    const formattedDate = new Date(values.date).toLocaleDateString('en-US');
-
-                    const response = await fetch('http://localhost:8000/api/providerService/management', {
+                    const response = await fetch('http://localhost:8000/api/service/add', {
                         method: 'POST',
-                        body: JSON.stringify({ ...values, date: formattedDate }), // Use the formatted date
+                        body: JSON.stringify(values),
                         headers: {
                             'Content-Type': 'application/json',
                             Authorization: `Bearer ${token}`,
                         },
                     });
                     if (response.ok) {
-                        alert('ProviderService added successfully');
+                        Swal.fire({
+                            title: "Service added successfully",
+                            icon: "success"
+                        });
                         formik.resetForm();
                         setOpen(false);
                         fetchProviderServicesData(token)
                     } else {
                         const errorData = await response.json();
-                        alert(`Error: ${errorData.message}`);
+                        Swal.fire({
+                            icon: "error",
+                            title: errorData.message,
+                        });
                     }
                 } catch (error) {
-                    console.error(error);
-                    alert('An error occurred while adding the providerService.');
+                    Swal.fire({
+                        icon: "error",
+                        title: error.message,
+                    });
                 }
             }
         },
@@ -213,7 +290,7 @@ export default function ProviderServiceManagement() {
             field: 'categoryId',
             headerName: 'Category ID',
             width: 100,
-            renderCell: (params) => params.row.categoryId
+            renderCell: (params) => params.row.categoryId.name
         },
         {
             field: 'actions',
@@ -226,6 +303,11 @@ export default function ProviderServiceManagement() {
                         label="Edit"
                         onClick={() => editProviderService(params.row.id)}
                     />
+                    <GridActionsCellItem
+                        icon={<DeleteIcon />}
+                        label="Delete"
+                        onClick={() => deleteProviderService(params.row.id)}
+                    />
                 </div>
             ),
         },
@@ -235,7 +317,7 @@ export default function ProviderServiceManagement() {
 
     return (
         <div style={{ width: '95%', margin: '0px auto 20px auto', borderRadius: '20px' }}>
-            <Button variant="outlined" onClick={() => addProviderService()} sx={{ margin: '10px 0 5px 0', backgroundColor: 'white', borderColor: '#6DABB4', color: 'black' }}>+ Add providerService</Button>
+            <Button variant="outlined" onClick={() => addProviderService()} sx={{ margin: '10px 0 5px 0', backgroundColor: 'white', borderColor: '#6DABB4', color: 'black' }}>+ Add Provider Service</Button>
             <DataGrid
                 rows={rows}
                 columns={columns}
@@ -271,7 +353,7 @@ export default function ProviderServiceManagement() {
                         borderRadius: '10px',
                         p: 4,
                     }}>
-                        <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px' }}>{isEditMode ? 'Update ProviderService' : 'Add ProviderService'}</Typography>
+                        <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px' }}>{isEditMode ? 'Update Provider Service' : 'Add Provider Service'}</Typography>
                         <TextField
                             id="name"
                             label="ProviderService Name"
@@ -321,8 +403,8 @@ export default function ProviderServiceManagement() {
                             helperText={formik.touched.categoryId && formik.errors.categoryId}
                         >
                             {categoryList.map((category) => (
-                                <MenuItem key={category.id} value={category.id}>
-                                    {`${category.id} - ${category.fullName}`}
+                                <MenuItem key={category._id} value={category._id}>
+                                    {category.name}
                                 </MenuItem>
                             ))}
                         </TextField>

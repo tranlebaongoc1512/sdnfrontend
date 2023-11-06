@@ -1,27 +1,72 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import EditIcon from '@mui/icons-material/Edit';
-import { Avatar} from '@mui/material';
+import { Avatar } from '@mui/material';
 import {
     DataGrid,
     GridActionsCellItem,
     GridToolbarContainer,
     GridToolbarExport,
 } from '@mui/x-data-grid';
+import Swal from 'sweetalert2';
 
 
 export default function AccountManagement() {
     const { token } = useContext(AuthContext);
     const [accounts, setAccountsData] = useState([]);
 
-    const [accountId, setAccountId] = useState(null);
-
     useEffect(() => {
         fetchAccountsData(token)
     }, [])
+    const banAccount = (id) => {
+        Swal.fire({
+            title: "Are you sure you want to ban this account?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, ban it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                ban(id)
+            }
+        });
+    }
+    const ban = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/service/banAccount/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                Swal.fire({
+                    title: "Banned!",
+                    text: "This account has been banned.",
+                    icon: "success"
+                });
+                fetchAccountsData()
+            } else {
+                // Handle error response
+                const errorData = await response.json();
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
+        }
+    }
     const fetchAccountsData = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/account', {
+            const response = await fetch('http://localhost:8000/api/user/listAllUsers', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -34,10 +79,16 @@ export default function AccountManagement() {
             } else {
                 // Handle error response
                 const errorData = await response.json();
-                alert(errorData.message);
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
             }
         } catch (error) {
-            alert(error.message);
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
         }
     };
     const columns = [
@@ -76,11 +127,11 @@ export default function AccountManagement() {
             width: 100,
             renderCell: (params) => (
                 <div>
-                    {/* <GridActionsCellItem
+                    <GridActionsCellItem
                         icon={<EditIcon />}
                         label="Edit"
-                        onClick={() => editAccount(params.row.id)}
-                    /> */}
+                        onClick={() => banAccount(params.row._id)}
+                    />
                 </div>
             ),
         },

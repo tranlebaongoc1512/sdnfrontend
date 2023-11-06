@@ -13,59 +13,13 @@ import ServiceManagement from '../ServiceManagement/ServiceManagement';
 import ProviderServiceManagement from '../ProviderServiceManagement/ProviderServiceManagement';
 import FooterComponent from '../Footer/Footer';
 import Navigation from '../Navigation/Navigation';
+import Swal from 'sweetalert2';
 
 const Profile = () => {
   const { token } = useContext(AuthContext);
   const [user, setUser] = useState(null);
-  const [providerData, setProviderData] = useState([]);
-  const [customerData, setCustomerData] = useState([]);
   const [value, setValue] = useState(1);
   const navigate = useNavigate();
-
-  const fetchProviderData = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/provider', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setProviderData(data);
-      } else {
-        // Handle error response
-        const errorData = await response.json();
-        alert(errorData.message);
-      }
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const fetchCustomerData = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/booking/list', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data)
-        setCustomerData(data);
-      } else {
-        // Handle error response
-        const errorData = await response.json();
-        alert(errorData.message);
-      }
-    } catch (error) {
-      alert(error.message);
-    }
-  };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -80,13 +34,6 @@ const Profile = () => {
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
-
-          // Check the role and fetch additional data accordingly
-          if (userData.role === 'provider') {
-            fetchProviderData();
-          } else if (userData.role === 'customer') {
-            fetchCustomerData();
-          }
         } else {
           // Handle error response
           const errorData = await response.json();
@@ -95,7 +42,10 @@ const Profile = () => {
         }
       } catch (error) {
         console.log(error.message);
-        alert('You are not allowed to access here');
+        Swal.fire({
+          icon: "error",
+          title: 'You are not allowed to access here',
+        });
         navigate('/');
       }
     };
@@ -124,7 +74,7 @@ const Profile = () => {
           </div>
         </div>
         {role === 'admin' && (
-          <Box sx={{ display: 'flex', height: '100% !import' }}>
+          <Box sx={{ display: 'flex', height: '100% !important' }}>
             <Tabs
               variant="scrollable"
               orientation='vertical'
@@ -151,8 +101,8 @@ const Profile = () => {
             </div>
           </Box>
         )}
-        {role === 'provider' && providerData && (
-          <Box sx={{ display: 'flex', height: '100% !import' }}>
+        {role === 'provider' && (
+          <Box sx={{ display: 'flex', height: '100% !important' }}>
             <Tabs
               variant="scrollable"
               orientation='vertical'
@@ -168,15 +118,15 @@ const Profile = () => {
               {value === 1 && <div className={styles.tabContent}>
                 <img src='./assets/img/empty.png' alt='empty' />
               </div>}
-              {value === 3 && <div className={styles.tabContent}>
+              {value === 2 && <div className={styles.tabContent}>
                 <ProviderServiceManagement />
               </div>}
             </div>
           </Box>
         )}
-        {role === 'customer' && customerData && (
+        {role === 'customer' && (
           <div>
-            <Box sx={{ display: 'flex', height: '100% !import' }}>
+            <Box sx={{ display: 'flex', height: '100% !important' }}>
               <Tabs
                 variant="scrollable"
                 orientation='vertical'

@@ -10,13 +10,13 @@
 // import { AuthContext } from '../../context/AuthContext';
 // import { useNavigate } from 'react-router-dom';
 
-// import './ClassDetail.css';
+// import './ServiceDetail.css';
 
-// const ClassDetails = () => {
+// const ServiceDetails = () => {
 //   const { token } = useContext(AuthContext);
 //   const { id } = useParams();
 //   const [user, setUser] = useState(null);
-//   const [classDetails, setClassDetails] = useState(null);
+//   const [serviceDetails, setServiceDetails] = useState(null);
 //   const [isBooked, setIsBooked] = useState(false);
 //   const navigate = useNavigate();
 
@@ -50,9 +50,9 @@
 //   }, [token, navigate]);
 
 //   useEffect(() => {
-//     const fetchClassData = async () => {
+//     const fetchServiceData = async () => {
 //       try {
-//         const response = await fetch(`http://localhost:8000/api/class/${id}`, {
+//         const response = await fetch(`http://localhost:8000/api/service/${id}`, {
 //           method: 'GET',
 //           headers: {
 //             'Content-Type': 'application/json',
@@ -61,7 +61,7 @@
 //         });
 //         if (response.ok) {
 //           const data = await response.json();
-//           setClassDetails(data);
+//           setServiceDetails(data);
 //         } else {
 //           // Handle error response
 //           const errorData = await response.json();
@@ -72,11 +72,11 @@
 //       }
 //     };
 
-//     fetchClassData();
+//     fetchServiceData();
 //   }, [id, token]);
 
 //   useEffect(() => {
-//     if (user && classDetails) {
+//     if (user && serviceDetails) {
 //       const fetchBookingData = async () => {
 //         try {
 //           const response = await fetch('http://localhost:8000/api/booking', {
@@ -88,11 +88,11 @@
 //           });
 //           if (response.ok) {
 //             const bookingData = await response.json();
-//             // Check if the user has booked this class
-//             const isClassBooked = bookingData.some(
-//               (booking) => booking.classId === classDetails.id && booking.userId === user.id
+//             // Check if the user has booked this service
+//             const isServiceBooked = bookingData.some(
+//               (booking) => booking.serviceId === serviceDetails.id && booking.userId === user.id
 //             );
-//             setIsBooked(isClassBooked);
+//             setIsBooked(isServiceBooked);
 //           } else {
 //             // Handle error response
 //             const errorData = await response.json();
@@ -105,9 +105,9 @@
 
 //       fetchBookingData();
 //     }
-//   }, [token, user, classDetails]);
+//   }, [token, user, serviceDetails]);
 
-//   if (!user || !classDetails) {
+//   if (!user || !serviceDetails) {
 //     return <div>Loading...</div>;
 //   }
 
@@ -116,13 +116,13 @@
 
 //   const handleBooking = () => {
 //     // Check if there are available slots (slotLeft > 0) before booking
-//     if (classDetails.slotLeft > 0) {
-//       const confirmBooking = window.confirm('Are you sure you want to book this class?');
+//     if (serviceDetails.slotLeft > 0) {
+//       const confirmBooking = window.confirm('Are you sure you want to book this service?');
 //       if (confirmBooking) {
 //         // Send the booking request to the backend
 //         const bookingData = {
-//           classId: classDetails.id,
-//           teacherId: classDetails.teacherId,
+//           serviceId: serviceDetails.id,
+//           teacherId: serviceDetails.teacherId,
 //           userId: user.id,
 //         };
 //         fetch('http://localhost:8000/api/booking/book', {
@@ -150,15 +150,15 @@
 //   };
 
 //   return (
-//     <Container sx={{ py: 8 }} maxWidth="xl" className="single">
-//       <Grid container spacing={4} className="details-row">
+//     <Container sx={{ py: 8 }} maxWidth="xl" serviceName="single">
+//       <Grid container spacing={4} serviceName="details-row">
 //         <Grid item xs={12} lg={8}>
-//           <div className="single-content">
+//           <div serviceName="single-content">
 //             <Card>
-//               <CardMedia component="img" image={classDetails.image} alt="Class" />
+//               <CardMedia component="img" image={serviceDetails.image} alt="Service" />
 //               <CardContent>
 //                 <Typography variant="h3" component="h3">
-//                   {classDetails.name}
+//                   {serviceDetails.name}
 //                 </Typography>
 //               </CardContent>
 //             </Card>
@@ -168,60 +168,60 @@
 //         <Grid item xs={12} lg={4}>
 //           <Card>
 //             <CardContent>
-//               <Typography variant="h3" component="h3" className="widget-title">
-//                 Class Details:
+//               <Typography variant="h3" component="h3" serviceName="widget-title">
+//                 Service Details:
 //               </Typography>
-//               <div className="category-widget">
+//               <div serviceName="category-widget">
 //               <ul>
 //                   <li>
 //                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>Taught By:</strong> {classDetails.teacherName}
+//                       <strong>Taught By:</strong> {serviceDetails.teacherName}
 //                     </Typography>
 //                   </li>
 //                   <br />
 //                   <li>
 //                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>Class Type:</strong> {classDetails.type}
+//                       <strong>Service Type:</strong> {serviceDetails.type}
 //                     </Typography>
 //                   </li>
 //                   <br />
 //                   <li>
 //                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>Class Size:</strong> {classDetails.classSize}
+//                       <strong>Service Size:</strong> {serviceDetails.serviceSize}
 //                     </Typography>
 //                   </li>
 //                   <br />
 //                   <li>
 //                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>Slots Left:</strong> {classDetails.slotLeft > 0 ? classDetails.slotLeft : 'Fully Booked'}
+//                       <strong>Slots Left:</strong> {serviceDetails.slotLeft > 0 ? serviceDetails.slotLeft : 'Fully Booked'}
 //                     </Typography>
 //                   </li>
 //                   <br />
 //                   <li>
 //                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>When:</strong> {classDetails.date}
+//                       <strong>When:</strong> {serviceDetails.date}
 //                     </Typography>
 //                   </li>
 //                   <br />
 //                   <li>
 //                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>What Time:</strong> {classDetails.time}
+//                       <strong>What Time:</strong> {serviceDetails.time}
 //                     </Typography>
 //                   </li>
 //                 </ul>
 //               </div>
-//               <div className="guest-btns" style={{ margin: '0 auto' }}>
+//               <div serviceName="guest-btns" style={{ margin: '0 auto' }}>
 //                 {isMember ? (
 //                   <>
 //                     {isBooked ? (
 //                       <Button variant="contained" disabled>
-//                         YOU BOOKED THIS CLASS
+//                         YOU BOOKED THIS SERVICE
 //                       </Button>
 //                     ) : (
 //                       <>
-//                         {classDetails.slotLeft > 0 ? (
+//                         {serviceDetails.slotLeft > 0 ? (
 //                           <Button variant="contained" onClick={handleBooking}>
-//                             BOOK CLASS
+//                             BOOK SERVICE
 //                           </Button>
 //                         ) : (
 //                           <Button variant="contained" disabled>
@@ -233,7 +233,7 @@
 //                   </>
 //                 ) : (
 //                   <Typography variant="body2" style={{ float: 'left' }}>
-//                     Login as member to book class.
+//                     Login as member to book service.
 //                   </Typography>
 //                 )}
 //               </div>
@@ -245,7 +245,7 @@
 //   );
 // };
 
-// export default ClassDetails;
+// export default ServiceDetails;
 import React, { useEffect, useState, useContext } from 'react';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -260,13 +260,13 @@ import { useNavigate } from 'react-router-dom';
 import Navigation from '../Navigation/Navigation';
 import Footer from '../Footer/Footer';
 
-import './ClassDetail.css';
+import './ServiceDetail.css';
 
-const ClassDetails = () => {
+const ServiceDetails = () => {
   const { token } = useContext(AuthContext);
   const { id } = useParams();
   const [user, setUser] = useState(null);
-  const [classDetails, setClassDetails] = useState(null);
+  const [serviceDetails, setServiceDetails] = useState(null);
   const [isBooked, setIsBooked] = useState(false);
   const navigate = useNavigate();
 
@@ -298,9 +298,9 @@ const ClassDetails = () => {
   }, [token, navigate]);
 
   useEffect(() => {
-    const fetchClassData = async () => {
+    const fetchServiceData = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/class/${id}`, {
+        const response = await fetch(`http://localhost:8000/api/service/${id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -309,7 +309,7 @@ const ClassDetails = () => {
         });
         if (response.ok) {
           const data = await response.json();
-          setClassDetails(data);
+          setServiceDetails(data);
         } else {
           // Handle error response
           const errorData = await response.json();
@@ -320,11 +320,11 @@ const ClassDetails = () => {
       }
     };
 
-    fetchClassData();
+    fetchServiceData();
   }, [id, token]);
 
   useEffect(() => {
-    if (user && classDetails) {
+    if (user && serviceDetails) {
       const fetchBookingData = async () => {
         try {
           const response = await fetch('http://localhost:8000/api/booking', {
@@ -336,17 +336,17 @@ const ClassDetails = () => {
           });
           if (response.ok) {
             const bookingData = await response.json();
-            // Check if the user has booked this class
-            let isClassBooked = false;
+            // Check if the user has booked this service
+            let isServiceBooked = false;
           if (Array.isArray(bookingData)) {
             for (const booking of bookingData) {
-              if (booking.classId === classDetails.id && booking.userId === user.id) {
-                isClassBooked = true;
+              if (booking.serviceId === serviceDetails.id && booking.userId === user.id) {
+                isServiceBooked = true;
                 break;
               }
             }
           }
-          setIsBooked(isClassBooked);
+          setIsBooked(isServiceBooked);
           } else {
             // Handle error response
             const errorData = await response.json();
@@ -359,17 +359,17 @@ const ClassDetails = () => {
 
       fetchBookingData();
     }
-  }, [token, user, classDetails]);
+  }, [token, user, serviceDetails]);
 
   const handleBooking = () => {
     // Check if there are available slots (slotLeft > 0) before booking
-    if (classDetails.slotLeft > 0) {
-      const confirmBooking = window.confirm('Are you sure you want to book this class?');
+    if (serviceDetails.slotLeft > 0) {
+      const confirmBooking = window.confirm('Are you sure you want to book this service?');
       if (confirmBooking) {
         // Send the booking request to the backend
         const bookingData = {
-          classId: classDetails.id,
-          teacherId: classDetails.teacherId,
+          serviceId: serviceDetails.id,
+          teacherId: serviceDetails.teacherId,
           userId: user.id,
         };
         fetch('http://localhost:8000/api/booking/book', {
@@ -397,7 +397,7 @@ const ClassDetails = () => {
     }
   };
 
-  if (!user || !classDetails) {
+  if (!user || !serviceDetails) {
     return <div>Loading...</div>;
   }
 
@@ -411,18 +411,18 @@ const ClassDetails = () => {
   return (
     <>
     <Navigation/>
-    <Container sx={{ py: 8 }} maxWidth="xl" className="single">
-      <Grid container spacing={4} className="details-row">
+    <Container sx={{ py: 8 }} maxWidth="xl" serviceName="single">
+      <Grid container spacing={4} serviceName="details-row">
         <Grid item xs={12} lg={7}>
-          <div className="single-content">
+          <div serviceName="single-content">
             <Card style={{alignItems:'center', justifyItems: 'center'}}>
               <CardMedia component="img" style={{width: '500px', height: '500px'}} 
-              // image={classDetails.image} 
+              // image={serviceDetails.image} 
               src={img.src}
-              alt="Class" />
+              alt="Service" />
               <CardContent>
                 <Typography variant="h3" component="h3">
-                  {classDetails.name}
+                  {serviceDetails.name}
                 </Typography>
               </CardContent>
             </Card>
@@ -432,66 +432,66 @@ const ClassDetails = () => {
         <Grid item xs={12} lg={5}>
           <Card>
             <CardContent>
-              <Typography variant="h3" component="h3" className="widget-title">
+              <Typography variant="h3" component="h3" serviceName="widget-title">
                 Service Details:
               </Typography>
-              <div className="category-widget">
+              <div serviceName="category-widget">
                 <ul>
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Provider:</strong> {classDetails.teacherName}
+                      <strong>Provider:</strong> {serviceDetails.teacherName}
                     </Typography>
                   </li>
                   <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Service category:</strong> {classDetails.type}
+                      <strong>Service category:</strong> {serviceDetails.type}
                     </Typography>
                   </li>
                   <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Description:</strong> {classDetails.classSize}
+                      <strong>Description:</strong> {serviceDetails.serviceSize}
                     </Typography>
                   </li>
                   <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Price:</strong> {classDetails.classSize}
+                      <strong>Price:</strong> {serviceDetails.serviceSize}
                     </Typography>
                   </li>
                   {/* <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
                       <strong>Slots Left:</strong>{' '}
-                      {classDetails.slotLeft > 0 ? classDetails.slotLeft : 'Fully Booked'}
+                      {serviceDetails.slotLeft > 0 ? serviceDetails.slotLeft : 'Fully Booked'}
                     </Typography>
                   </li> */}
                   {/* <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>When:</strong> {classDetails.date}
+                      <strong>When:</strong> {serviceDetails.date}
                     </Typography>
                   </li> */}
                   {/* <br />
                   <li>
                     <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>What Time:</strong> {classDetails.time}
+                      <strong>What Time:</strong> {serviceDetails.time}
                     </Typography>
                   </li> */}
                 </ul>
               </div>
-              <div className="guest-btns" style={{ margin: '0 auto' }}>
+              <div serviceName="guest-btns" style={{ margin: '0 auto' }}>
                 {isMember ? (
                   <>
                     {isBooked ? (
                       <Button variant="contained" disabled>
-                        YOU BOOKED THIS CLASS
+                        YOU BOOKED THIS SERVICE
                       </Button>
                     ) : (
                       <>
-                        {classDetails.slotLeft > 0 ? (
+                        {serviceDetails.slotLeft > 0 ? (
                           <Button variant="contained" onClick={handleBooking}>
-                            BOOK CLASS
+                            BOOK SERVICE
                           </Button>
                         ) : (
                           <Button variant="contained" disabled>
@@ -503,7 +503,7 @@ const ClassDetails = () => {
                   </>
                 ) : (
                   <Typography variant="body2" style={{ float: 'left' }}>
-                    Login as member to book class.
+                    Login as member to book service.
                   </Typography>
                 )}
               </div>
@@ -517,4 +517,4 @@ const ClassDetails = () => {
   );
 };
 
-export default ClassDetails;
+export default ServiceDetails;

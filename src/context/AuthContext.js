@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState('');
   const [userRole, setUserRole] = useState(''); 
   const navigate = useNavigate();
-
   const login = async (email, password) => {
     try {
       const response = await fetch('http://localhost:8000/api/auth/login', {

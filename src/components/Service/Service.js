@@ -15,11 +15,11 @@ import PersonIcon from '@mui/icons-material/Person';
 import Navigation from '../Navigation/Navigation';
 import Footer from '../Footer/Footer';
 
-export default function Class() {
-  const [classes, setClasses] = useState([]);
+export default function Service() {
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
-    const baseURL = 'http://localhost:8000/api/class';
+    const baseURL = 'http://localhost:8000/api/service/list';
 
     fetch(baseURL)
       .then(response => {
@@ -29,7 +29,7 @@ export default function Class() {
         return response.json();
       })
       .then(data => {
-        setClasses(data);
+        setServices(data);
       })
       .catch(error => console.log(error.message));
   }, []);
@@ -37,7 +37,7 @@ export default function Class() {
   return (
     <>
     <Navigation/>
-    <Container sx={{ py: 8, mt: 1 }} maxWidth="xl" className="content" style={{ marginBottom: '120px' }}>
+    <Container sx={{ py: 8, mt: 1 }} maxWidth="xl" serviceName="content" style={{ marginBottom: '120px' }}>
       <Typography variant="h4" component="div" sx={{mb: 3}}>
         Services
       </Typography>
@@ -47,7 +47,7 @@ export default function Class() {
 />
 
       <Grid container spacing={4}>
-        {classes.map((card) => (
+        {services.map((card) => (
           <Grid item key={card.id} xs={12} sm={6} md={4} xl={3}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
             
@@ -76,7 +76,7 @@ export default function Class() {
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Typography variant="body2" color="text.secondary" sx={{ display: 'flex' }}>
                     <PersonIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 1 }} />
-                    {card.slotLeft} / {card.classSize}
+                    {card.slotLeft} / {card.serviceSize}
                   </Typography>
                 </Box>
 
@@ -87,7 +87,7 @@ export default function Class() {
 
               <CardActions style={{ margin: '0 auto' }}>
                 <Link to={`${card.id}`}>
-                  <Button className="btn">Service Detail</Button>
+                  <Button serviceName="btn">Service Detail</Button>
                 </Link>
               </CardActions>
 

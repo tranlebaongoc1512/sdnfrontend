@@ -11,9 +11,11 @@ import styles from './dashboard.module.css'
 import Navigation from '../Navigation/Navigation';
 import FooterComponent from '../Footer/Footer';
 import { AuthContext } from '../../context/AuthContext';
+import Swal from 'sweetalert2';
 
 const Dashboard = () => {
     const { token } = useContext(AuthContext);
+    console.log(token)
     const [bookings, setBookingsData] = useState([]);
 
     const [open, setOpen] = React.useState(false);
@@ -40,7 +42,7 @@ const Dashboard = () => {
     }, [])
     const fetchBookingsData = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/booking', {
+            const response = await fetch('http://localhost:8000/api/booking/listAll', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -53,10 +55,16 @@ const Dashboard = () => {
             } else {
                 // Handle error response
                 const errorData = await response.json();
-                alert(errorData.message);
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
             }
         } catch (error) {
-            alert(error.message);
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
         }
     };
     const fetchBookingData = async (id) => {
@@ -74,11 +82,16 @@ const Dashboard = () => {
                 setIsFetchBookingData(true);
             } else {
                 const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
             }
         } catch (error) {
-            console.error(error);
-            alert('An error occurred while fetching booking data.');
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
             setOpen(false);
         }
     };
