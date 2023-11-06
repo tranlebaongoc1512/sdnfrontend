@@ -14,7 +14,7 @@ export default function SelectAutoWidth() {
   return (
     <div>
       <FormControl fullWidth sx={{ minWidth: 80 }}>
-        <InputLabel id="demo-simple-select-autowidth-label">Age</InputLabel>
+        <InputLabel id="demo-simple-select-autowidth-label">Role</InputLabel>
         <Select
           style={{textAlign:'left'}}
           labelId="demo-simple-select-autowidth-label"
@@ -24,8 +24,8 @@ export default function SelectAutoWidth() {
           
           label="Role"
         >
-          <MenuItem value={1}>Provider</MenuItem>
-          <MenuItem value={2}>Customer</MenuItem>
+          <MenuItem value="provider">provider</MenuItem>
+          <MenuItem value="customer">customer</MenuItem>
         </Select>
       </FormControl>
     </div>
