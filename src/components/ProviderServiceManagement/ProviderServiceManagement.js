@@ -18,7 +18,7 @@ export default function ProviderServiceManagement() {
     const { token } = useContext(AuthContext);
     const [providerServices, setProviderServicesData] = useState([]);
 
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const [categoryList, setCategoryList] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
     const [providerServiceData, setProviderServiceData] = useState(null);

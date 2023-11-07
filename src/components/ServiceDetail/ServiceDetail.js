@@ -29,7 +29,9 @@ const ServiceDetails = () => {
   const [serviceDetails, setServiceDetails] = useState(null);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [datetime, setDatetime] = useState(null);
+  const [parsedDatetime, setParsedDateTime] = useState('');
 
   const fetchServiceData = async () => {
     try {
@@ -91,39 +93,43 @@ const ServiceDetails = () => {
       });
     }
   }, [user, id]);
-
+  useEffect(() => {
+    const parsedDate = new Date(datetime)
+    const newDatetime = parsedDate.toISOString()
+    setParsedDateTime(newDatetime);
+  }, [datetime])
   const formik = useFormik({
     initialValues: {
       serviceId: '',
       customerId: '',
-      datetime: dayjs(new Date()),
+      datetime: parsedDatetime,
       address: '',
     },
     onSubmit: async (values) => {
-      console.log(values)
+      values.datetime = parsedDatetime;
       try {
-        // const response = await fetch('http://localhost:8000/api/booking/add', {
-        //   method: 'POST',
-        //   body: JSON.stringify(values),
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     Authorization: `Bearer ${token}`,
-        //   },
-        // });
-        // if (response.ok) {
-        //   Swal.fire({
-        //     title: "Booked successfully",
-        //     icon: "success"
-        //   });
-        //   formik.resetForm();
-        //   setOpen(false);
-        // } else {
-        //   const errorData = await response.json();
-        //   Swal.fire({
-        //     icon: "error",
-        //     title: errorData.message,
-        //   });
-        // }
+        const response = await fetch('http://localhost:8000/api/booking/add', {
+          method: 'POST',
+          body: JSON.stringify(values),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          Swal.fire({
+            title: "Booked successfully",
+            icon: "success"
+          });
+          formik.resetForm();
+          setOpen(false);
+        } else {
+          const errorData = await response.json();
+          Swal.fire({
+            icon: "error",
+            title: errorData.message,
+          });
+        }
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -251,7 +257,9 @@ const ServiceDetails = () => {
                   <DateTimePicker
                     label="Datetime picker"
                     name='datetime'
-                    value={dayjs(formik.values.datetime)}
+                    minDate={dayjs(new Date())}
+                    value={datetime}
+                    onChange={(newDatetime) => setDatetime(newDatetime)}
                   />
                 </DemoContainer>
               </LocalizationProvider>

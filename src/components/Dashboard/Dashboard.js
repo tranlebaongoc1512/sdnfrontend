@@ -15,12 +15,10 @@ import Swal from 'sweetalert2';
 
 const Dashboard = () => {
     const { token } = useContext(AuthContext);
-    console.log(token)
     const [bookings, setBookingsData] = useState([]);
 
     const [open, setOpen] = React.useState(false);
     const [bookingData, setBookingData] = useState(null);
-    const [isFetchBookingData, setIsFetchBookingData] = useState(false);
     const [bookingId, setBookingId] = useState(null);
     // Số liệu mẫu cho 4 ô trên
     const data = {
@@ -30,16 +28,36 @@ const Dashboard = () => {
         bookingsReported: 5,
     };
 
-    // Dữ liệu lịch sử dịch vụ mẫu
-    const bookingHistory = [
-        { id: 1, name: 'Booking A', user: '1', status: 'Completed', date: '2023-11-01', time: '19:00' },
-        { id: 2, name: 'Booking B', user: '2', status: 'Canceled', date: '2023-11-02', time: '19:00' },
-        { id: 3, name: 'Booking C', user: '3', status: 'Finished', date: '2023-11-03', time: '19:00' },
-        { id: 4, name: 'Booking D', user: '4', status: 'Reported', date: '2023-11-04', time: '19:00' },
-    ];
     useEffect(() => {
-        fetchBookingsData(token)
+        fetchBookingsData()
     }, [])
+    const fetchBookingsByStatus = async (status) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/booking/listByStatus/${status}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setBookingsData(data.bookings);
+            } else {
+                // Handle error response
+                const errorData = await response.json();
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
+        }
+    }
     const fetchBookingsData = async () => {
         try {
             const response = await fetch('http://localhost:8000/api/booking/listAll', {
@@ -51,7 +69,7 @@ const Dashboard = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setBookingsData(data);
+                setBookingsData(data.bookings);
             } else {
                 // Handle error response
                 const errorData = await response.json();
@@ -69,7 +87,7 @@ const Dashboard = () => {
     };
     const fetchBookingData = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/booking/${id}`, {
+            const response = await fetch(`http://localhost:8000/api/booking/bookingDetails/${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,8 +96,7 @@ const Dashboard = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setBookingData(data);
-                setIsFetchBookingData(true);
+                setBookingData(data.booking);
             } else {
                 const errorData = await response.json();
                 Swal.fire({
@@ -100,6 +117,26 @@ const Dashboard = () => {
         fetchBookingData(id);
         setOpen(true);
     };
+    const handleChangeStatus = async (e) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/booking/updateStatus/${bookingId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ status: e.target.value }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            if (response.ok) {
+                fetchBookingsData()
+            } else {
+                // Handle error response
+                const errorData = await response.json();
+                console.log(errorData.message)
+            }
+        } catch (error) {
+            console.log(error.message)
+        }
+    };
     const columns = [
         { field: 'id', headerName: 'ID', width: 40, renderCell: (params) => params.row.id },
         {
@@ -115,16 +152,10 @@ const Dashboard = () => {
             renderCell: (params) => params.row.user
         },
         {
-            field: 'date',
-            headerName: 'Date',
-            width: 140,
-            renderCell: (params) => params.row.date
-        },
-        {
-            field: 'time',
-            headerName: 'Time',
-            width: 140,
-            renderCell: (params) => params.row.time
+            field: 'datetime',
+            headerName: 'Datetime',
+            width: 200,
+            renderCell: (params) => params.row.datetime
         },
         {
             field: 'status',
@@ -147,7 +178,7 @@ const Dashboard = () => {
             ),
         },
     ];
-    const rows = bookingHistory
+    const rows = bookings
 
     return (
         <>
@@ -156,47 +187,55 @@ const Dashboard = () => {
                 <Grid container spacing={3}>
                     <Grid item xs={3}>
                         <Paper className={styles.paper}>
-                            <Typography variant="h6">All Bookings</Typography>
-                            <Typography variant="h4">{data.bookingsCompleted}</Typography>
+                            <button onClick={() => fetchBookingsData()} style={{ width: '100%', background: 'transparent', border: 'none' }}>
+                                <Typography variant="h6">All Bookings</Typography>
+                                <Typography variant="h4">{data.bookingsCompleted}</Typography>
+                            </button>
                         </Paper>
                     </Grid>
                     <Grid item xs={3}>
                         <Paper className={styles.paper}>
-                            <Grid container>
-                                <Grid item xs={3}>
-                                    <img src="./assets/img/cancel.png" alt="canceled" className={styles.image} />
+                            <button onClick={() => fetchBookingsByStatus('canceled')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
+                                <Grid container>
+                                    <Grid item xs={3}>
+                                        <img src="./assets/img/cancel.png" alt="canceled" className={styles.image} />
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <Typography variant="h6">Bookings Canceled</Typography>
+                                        <Typography variant="h4">{data.bookingsCanceled}</Typography>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={9}>
-                                    <Typography variant="h6">Bookings Canceled</Typography>
-                                    <Typography variant="h4">{data.bookingsCanceled}</Typography>
-                                </Grid>
-                            </Grid>
+                            </button>
                         </Paper>
                     </Grid>
                     <Grid item xs={3}>
                         <Paper className={styles.paper}>
-                            <Grid container>
-                                <Grid item xs={3}>
-                                    <img src="./assets/img/finished.png" alt="finished" className={styles.image} />
+                            <button onClick={() => fetchBookingsByStatus('completed')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
+                                <Grid container>
+                                    <Grid item xs={3}>
+                                        <img src="./assets/img/finished.png" alt="completed" className={styles.image} />
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <Typography variant="h6">Bookings Completed</Typography>
+                                        <Typography variant="h4">{data.bookingsFinished}</Typography>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={9}>
-                                    <Typography variant="h6">Bookings Finished</Typography>
-                                    <Typography variant="h4">{data.bookingsFinished}</Typography>
-                                </Grid>
-                            </Grid>
+                            </button>
                         </Paper>
                     </Grid>
                     <Grid item xs={3}>
                         <Paper className={styles.paper}>
-                            <Grid container>
-                                <Grid item xs={3}>
-                                    <img src="./assets/img/reported.png" alt="reported" className={styles.image} />
+                            <button onClick={() => fetchBookingsByStatus('reported')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
+                                <Grid container>
+                                    <Grid item xs={3}>
+                                        <img src="./assets/img/reported.png" alt="reported" className={styles.image} />
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <Typography variant="h6">Bookings Reported</Typography>
+                                        <Typography variant="h4">{data.bookingsReported}</Typography>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={9}>
-                                    <Typography variant="h6">Bookings Reported</Typography>
-                                    <Typography variant="h4">{data.bookingsReported}</Typography>
-                                </Grid>
-                            </Grid>
+                            </button>
                         </Paper>
                     </Grid>
                     {/* Bảng lịch sử dịch vụ */}
@@ -241,16 +280,16 @@ const Dashboard = () => {
                             <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px' }}>Update Booking</Typography>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <Typography>Service Name: Service A</Typography>
+                                    <Typography>Service Name: {bookingData?.serviceId.name}</Typography>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Typography>Customer Name: John Doe</Typography>
+                                    <Typography>Customer Name: {bookingData?.customerId.fullName}</Typography>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Typography>Date and Time: 2023-11-05 10:00 AM</Typography>
+                                    <Typography>Date and Time: {bookingData?.datetime}</Typography>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Typography>Address: 123 Main St, City</Typography>
+                                    <Typography>Address: {bookingData?.address}</Typography>
                                 </Grid>
                             </Grid>
                             <TextField
@@ -260,6 +299,7 @@ const Dashboard = () => {
                                 fullWidth
                                 margin="normal"
                                 name="status"
+                                onChange={handleChangeStatus}
                             >
                                 <MenuItem value='pending'>
                                     Pending
@@ -274,10 +314,6 @@ const Dashboard = () => {
                                     Cancel
                                 </MenuItem>
                             </TextField>
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px' }}>
-                                <Button sx={{ marginRight: '10px', backgroundColor: '#6dabb4' }} variant="contained"  color="primary">Submit</Button>
-                                <Button variant="outlined" sx={{ borderColor: '#6dabb4', color: '#6dabb4' }} onClick={() => setOpen(false)}>Cancel</Button>
-                            </div>
                         </Box>
                     </Fade>
                 </Modal>
