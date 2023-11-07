@@ -8,10 +8,6 @@ import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import DateRangeIcon from '@mui/icons-material/DateRange';
-import PersonIcon from '@mui/icons-material/Person';
 import Navigation from '../Navigation/Navigation';
 import Footer from '../Footer/Footer';
 
@@ -29,7 +25,7 @@ export default function Service() {
         return response.json();
       })
       .then(data => {
-        setServices(data);
+        setServices(data.services);
       })
       .catch(error => console.log(error.message));
   }, []);
@@ -66,27 +62,18 @@ export default function Service() {
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  <AccessTimeIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 1 }} />
-                  {card.time}
-
-                  <DateRangeIcon sx={{ fontSize: 16, verticalAlign: 'middle', ml: 2, mr: 1 }} />
-                  {card.date}
+                  {card.providerId.fullName}
                 </Typography>
-
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ display: 'flex' }}>
-                    <PersonIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 1 }} />
-                    {card.slotLeft} / {card.serviceSize}
-                  </Typography>
-                </Box>
-
                 <Typography variant="body2" color="text.secondary">
-                  Type: {card.type}
+                  {card.categoryId.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {card.price}
                 </Typography>
               </CardContent>
 
               <CardActions style={{ margin: '0 auto' }}>
-                <Link to={`${card.id}`}>
+                <Link to={`${card._id}`}>
                   <Button serviceName="btn">Service Detail</Button>
                 </Link>
               </CardActions>

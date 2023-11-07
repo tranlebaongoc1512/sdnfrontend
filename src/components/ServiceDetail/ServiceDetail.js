@@ -1,251 +1,3 @@
-// import React, { useEffect, useState, useContext } from 'react';
-// import Button from '@mui/material/Button';
-// import Grid from '@mui/material/Grid';
-// import Typography from '@mui/material/Typography';
-// import Container from '@mui/material/Container';
-// import Card from '@mui/material/Card';
-// import CardContent from '@mui/material/CardContent';
-// import CardMedia from '@mui/material/CardMedia';
-// import { useParams } from 'react-router-dom';
-// import { AuthContext } from '../../context/AuthContext';
-// import { useNavigate } from 'react-router-dom';
-
-// import './ServiceDetail.css';
-
-// const ServiceDetails = () => {
-//   const { token } = useContext(AuthContext);
-//   const { id } = useParams();
-//   const [user, setUser] = useState(null);
-//   const [serviceDetails, setServiceDetails] = useState(null);
-//   const [isBooked, setIsBooked] = useState(false);
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const fetchUserProfile = async () => {
-//       try {
-//         const response = await fetch('http://localhost:8000/api/user', {
-//           method: 'GET',
-//           headers: {
-//             'Content-Type': 'application/json',
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-//         if (response.ok) {
-//           const userData = await response.json();
-//           setUser(userData);
-//         } else {
-//           // Handle error response
-//           const errorData = await response.json();
-//           console.log(errorData.message);
-//           navigate('/');
-//         }
-//       } catch (error) {
-//         console.log(error.message);
-//         alert('You are not allowed to access here');
-//         navigate('/');
-//       }
-//     };
-
-//     fetchUserProfile();
-//   }, [token, navigate]);
-
-//   useEffect(() => {
-//     const fetchServiceData = async () => {
-//       try {
-//         const response = await fetch(`http://localhost:8000/api/service/${id}`, {
-//           method: 'GET',
-//           headers: {
-//             'Content-Type': 'application/json',
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-//         if (response.ok) {
-//           const data = await response.json();
-//           setServiceDetails(data);
-//         } else {
-//           // Handle error response
-//           const errorData = await response.json();
-//           console.log(errorData.message);
-//         }
-//       } catch (error) {
-//         console.log(error.message);
-//       }
-//     };
-
-//     fetchServiceData();
-//   }, [id, token]);
-
-//   useEffect(() => {
-//     if (user && serviceDetails) {
-//       const fetchBookingData = async () => {
-//         try {
-//           const response = await fetch('http://localhost:8000/api/booking', {
-//             method: 'GET',
-//             headers: {
-//               'Content-Type': 'application/json',
-//               Authorization: `Bearer ${token}`,
-//             },
-//           });
-//           if (response.ok) {
-//             const bookingData = await response.json();
-//             // Check if the user has booked this service
-//             const isServiceBooked = bookingData.some(
-//               (booking) => booking.serviceId === serviceDetails.id && booking.userId === user.id
-//             );
-//             setIsBooked(isServiceBooked);
-//           } else {
-//             // Handle error response
-//             const errorData = await response.json();
-//             console.log(errorData.message);
-//           }
-//         } catch (error) {
-//           console.log(error.message);
-//         }
-//       };
-
-//       fetchBookingData();
-//     }
-//   }, [token, user, serviceDetails]);
-
-//   if (!user || !serviceDetails) {
-//     return <div>Loading...</div>;
-//   }
-
-//   const { userRole } = user;
-//   const isMember = userRole === 'member';
-
-//   const handleBooking = () => {
-//     // Check if there are available slots (slotLeft > 0) before booking
-//     if (serviceDetails.slotLeft > 0) {
-//       const confirmBooking = window.confirm('Are you sure you want to book this service?');
-//       if (confirmBooking) {
-//         // Send the booking request to the backend
-//         const bookingData = {
-//           serviceId: serviceDetails.id,
-//           teacherId: serviceDetails.teacherId,
-//           userId: user.id,
-//         };
-//         fetch('http://localhost:8000/api/booking/book', {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//             Authorization: `Bearer ${token}`,
-//           },
-//           body: JSON.stringify(bookingData),
-//         })
-//           .then((response) => {
-//             if (!response.ok) {
-//               throw new Error(`HTTP Status: ${response.status}`);
-//             }
-//             return response.json();
-//           })
-//           .then((data) => {
-//             alert(data.message);
-//           })
-//           .catch((error) => alert(error.message));
-//       }
-//     } else {
-//       alert('No more slots available!');
-//     }
-//   };
-
-//   return (
-//     <Container sx={{ py: 8 }} maxWidth="xl" serviceName="single">
-//       <Grid container spacing={4} serviceName="details-row">
-//         <Grid item xs={12} lg={8}>
-//           <div serviceName="single-content">
-//             <Card>
-//               <CardMedia component="img" image={serviceDetails.image} alt="Service" />
-//               <CardContent>
-//                 <Typography variant="h3" component="h3">
-//                   {serviceDetails.name}
-//                 </Typography>
-//               </CardContent>
-//             </Card>
-//           </div>
-//         </Grid>
-
-//         <Grid item xs={12} lg={4}>
-//           <Card>
-//             <CardContent>
-//               <Typography variant="h3" component="h3" serviceName="widget-title">
-//                 Service Details:
-//               </Typography>
-//               <div serviceName="category-widget">
-//               <ul>
-//                   <li>
-//                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>Taught By:</strong> {serviceDetails.teacherName}
-//                     </Typography>
-//                   </li>
-//                   <br />
-//                   <li>
-//                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>Service Type:</strong> {serviceDetails.type}
-//                     </Typography>
-//                   </li>
-//                   <br />
-//                   <li>
-//                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>Service Size:</strong> {serviceDetails.serviceSize}
-//                     </Typography>
-//                   </li>
-//                   <br />
-//                   <li>
-//                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>Slots Left:</strong> {serviceDetails.slotLeft > 0 ? serviceDetails.slotLeft : 'Fully Booked'}
-//                     </Typography>
-//                   </li>
-//                   <br />
-//                   <li>
-//                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>When:</strong> {serviceDetails.date}
-//                     </Typography>
-//                   </li>
-//                   <br />
-//                   <li>
-//                     <Typography variant="body2" style={{ float: 'left' }}>
-//                       <strong>What Time:</strong> {serviceDetails.time}
-//                     </Typography>
-//                   </li>
-//                 </ul>
-//               </div>
-//               <div serviceName="guest-btns" style={{ margin: '0 auto' }}>
-//                 {isMember ? (
-//                   <>
-//                     {isBooked ? (
-//                       <Button variant="contained" disabled>
-//                         YOU BOOKED THIS SERVICE
-//                       </Button>
-//                     ) : (
-//                       <>
-//                         {serviceDetails.slotLeft > 0 ? (
-//                           <Button variant="contained" onClick={handleBooking}>
-//                             BOOK SERVICE
-//                           </Button>
-//                         ) : (
-//                           <Button variant="contained" disabled>
-//                             NO MORE SLOT
-//                           </Button>
-//                         )}
-//                       </>
-//                     )}
-//                   </>
-//                 ) : (
-//                   <Typography variant="body2" style={{ float: 'left' }}>
-//                     Login as member to book service.
-//                   </Typography>
-//                 )}
-//               </div>
-//             </CardContent>
-//           </Card>
-//         </Grid>
-//       </Grid>
-//     </Container>
-//   );
-// };
-
-// export default ServiceDetails;
 import React, { useEffect, useState, useContext } from 'react';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -259,260 +11,259 @@ import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../Navigation/Navigation';
 import Footer from '../Footer/Footer';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 import './ServiceDetail.css';
+import Swal from 'sweetalert2';
+import { Backdrop, Box, Fade, Modal, TextField } from '@mui/material';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import dayjs from 'dayjs';
 
 const ServiceDetails = () => {
   const { token } = useContext(AuthContext);
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [serviceDetails, setServiceDetails] = useState(null);
-  const [isBooked, setIsBooked] = useState(false);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [open, setOpen] = React.useState(false);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/api/user', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        } else {
-          // If user is not logged in, set them as guest
-          setUser({ userRole: 'guest' });
-        }
-      } catch (error) {
-        console.log(error.message);
-        alert('You are not allowed to access here');
-        navigate('/');
+  const fetchServiceData = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/service/detail/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setServiceDetails(data.service);
+        setIsLoading(false)
+      } else {
+        // Handle error response
+        const errorData = await response.json();
+        console.log(errorData.message);
       }
-    };
-
-    fetchUserProfile();
-  }, [token, navigate]);
-
-  useEffect(() => {
-    const fetchServiceData = async () => {
-      try {
-        const response = await fetch(`http://localhost:8000/api/service/${id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setServiceDetails(data);
-        } else {
-          // Handle error response
-          const errorData = await response.json();
-          console.log(errorData.message);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-
-    fetchServiceData();
-  }, [id, token]);
-
-  useEffect(() => {
-    if (user && serviceDetails) {
-      const fetchBookingData = async () => {
-        try {
-          const response = await fetch('http://localhost:8000/api/booking', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (response.ok) {
-            const bookingData = await response.json();
-            // Check if the user has booked this service
-            let isServiceBooked = false;
-          if (Array.isArray(bookingData)) {
-            for (const booking of bookingData) {
-              if (booking.serviceId === serviceDetails.id && booking.userId === user.id) {
-                isServiceBooked = true;
-                break;
-              }
-            }
-          }
-          setIsBooked(isServiceBooked);
-          } else {
-            // Handle error response
-            const errorData = await response.json();
-            console.log(errorData.message);
-          }
-        } catch (error) {
-          console.log(error.message);
-        }
-      };
-
-      fetchBookingData();
+    } catch (error) {
+      console.log(error.message);
     }
-  }, [token, user, serviceDetails]);
-
-  const handleBooking = () => {
-    // Check if there are available slots (slotLeft > 0) before booking
-    if (serviceDetails.slotLeft > 0) {
-      const confirmBooking = window.confirm('Are you sure you want to book this service?');
-      if (confirmBooking) {
-        // Send the booking request to the backend
-        const bookingData = {
-          serviceId: serviceDetails.id,
-          teacherId: serviceDetails.teacherId,
-          userId: user.id,
-        };
-        fetch('http://localhost:8000/api/booking/book', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(bookingData),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            alert(data.message);
-            setIsBooked(true); // Update isBooked state to true after successful booking
-          })
-          .catch((error) => alert(error.message));
+  };
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+      } else {
+        // If user is not logged in, set them as guest
+        setUser({ role: 'guest' });
       }
-    } else {
-      alert('No more slots available!');
+    } catch (error) {
+      console.log(error.message);
+      Swal.fire({
+        icon: "error",
+        title: 'You are not allowed to access here',
+      }).then(
+        navigate('/'))
     }
   };
 
-  if (!user || !serviceDetails) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    fetchUserProfile()
+    fetchServiceData();
+  }, []);
+  useEffect(() => {
+    if (user?.role === 'customer' && id) {
+      formik.setValues({
+        serviceId: id,
+        customerId: user._id
+      });
+    }
+  }, [user, id]);
 
-  const { role } = user;
-  const isMember = role === 'member';
+  const formik = useFormik({
+    initialValues: {
+      serviceId: '',
+      customerId: '',
+      datetime: dayjs(new Date()),
+      address: '',
+    },
+    onSubmit: async (values) => {
+      console.log(values)
+      try {
+        // const response = await fetch('http://localhost:8000/api/booking/add', {
+        //   method: 'POST',
+        //   body: JSON.stringify(values),
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // });
+        // if (response.ok) {
+        //   Swal.fire({
+        //     title: "Booked successfully",
+        //     icon: "success"
+        //   });
+        //   formik.resetForm();
+        //   setOpen(false);
+        // } else {
+        //   const errorData = await response.json();
+        //   Swal.fire({
+        //     icon: "error",
+        //     title: errorData.message,
+        //   });
+        // }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: error.message,
+        });
+      }
+    },
+    validationSchema: Yup.object({
+      address: Yup.string().required('Required.'),
+    }),
+  });
 
-  const img = {
-    src: 'https://images.squarespace-cdn.com/content/v1/559d822ae4b0b0ab59484d42/1444777151238-AU8MXVDVG9JPWYTDZ36H/image-asset.jpeg'
-  }
-
+  if (isLoading === true) return (
+    <div>Loading...</div>
+  )
   return (
     <>
-    <Navigation/>
-    <Container sx={{ py: 8 }} maxWidth="xl" serviceName="single">
-      <Grid container spacing={4} serviceName="details-row">
-        <Grid item xs={12} lg={7}>
-          <div serviceName="single-content">
-            <Card style={{alignItems:'center', justifyItems: 'center'}}>
-              <CardMedia component="img" style={{width: '500px', height: '500px'}} 
-              // image={serviceDetails.image} 
-              src={img.src}
-              alt="Service" />
+      <Navigation />
+      <Container sx={{ py: 8 }} maxWidth="xl" className="single">
+        <Grid container spacing={4} className="details-row">
+          <Grid item xs={12} lg={7}>
+            <div className="single-content">
+              <Card style={{ alignItems: 'center', justifyItems: 'center' }}>
+                <CardMedia component="img" style={{ width: '500px', height: '500px' }}
+                  src={serviceDetails.image}
+                  alt="Service" />
+                <CardContent>
+                  <Typography variant="h3" component="h3">
+                    {serviceDetails.name}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </div>
+          </Grid>
+
+          <Grid item xs={12} lg={5}>
+            <Card>
               <CardContent>
-                <Typography variant="h3" component="h3">
-                  {serviceDetails.name}
+                <Typography variant="h3" component="h3" className="widget-title">
+                  Service Details:
                 </Typography>
+                <div className="category-widget">
+                  <ul>
+                    <li>
+                      <Typography variant="body2" style={{ float: 'left' }}>
+                        <strong>Provider:</strong> {serviceDetails.providerId.fullName}
+                      </Typography>
+                    </li>
+                    <br />
+                    <li>
+                      <Typography variant="body2" style={{ float: 'left' }}>
+                        <strong>Service category:</strong> {serviceDetails.categoryId.name}
+                      </Typography>
+                    </li>
+                    <br />
+                    <li>
+                      <Typography variant="body2" style={{ float: 'left' }}>
+                        <strong>Description:</strong> {serviceDetails.description}
+                      </Typography>
+                    </li>
+                    <br />
+                    <li>
+                      <Typography variant="body2" style={{ float: 'left' }}>
+                        <strong>Price:</strong> {serviceDetails.price}
+                      </Typography>
+                    </li>
+                  </ul>
+                </div>
+                <div className="guest-btns" style={{ margin: '0 auto' }}>
+                  {user.role === 'customer' ? (
+                    <>
+                      <Button variant="contained" onClick={() => { setOpen(true) }} >
+                        Book
+                      </Button>
+                    </>
+                  ) : (
+                    <Typography variant="body2" style={{ float: 'left' }}>
+                      Login as customer to book service.
+                    </Typography>
+                  )}
+                </div>
               </CardContent>
             </Card>
-          </div>
+          </Grid>
         </Grid>
-
-        <Grid item xs={12} lg={5}>
-          <Card>
-            <CardContent>
-              <Typography variant="h3" component="h3" serviceName="widget-title">
-                Service Details:
-              </Typography>
-              <div serviceName="category-widget">
-                <ul>
-                  <li>
-                    <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Provider:</strong> {serviceDetails.teacherName}
-                    </Typography>
-                  </li>
-                  <br />
-                  <li>
-                    <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Service category:</strong> {serviceDetails.type}
-                    </Typography>
-                  </li>
-                  <br />
-                  <li>
-                    <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Description:</strong> {serviceDetails.serviceSize}
-                    </Typography>
-                  </li>
-                  <br />
-                  <li>
-                    <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Price:</strong> {serviceDetails.serviceSize}
-                    </Typography>
-                  </li>
-                  {/* <li>
-                    <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>Slots Left:</strong>{' '}
-                      {serviceDetails.slotLeft > 0 ? serviceDetails.slotLeft : 'Fully Booked'}
-                    </Typography>
-                  </li> */}
-                  {/* <br />
-                  <li>
-                    <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>When:</strong> {serviceDetails.date}
-                    </Typography>
-                  </li> */}
-                  {/* <br />
-                  <li>
-                    <Typography variant="body2" style={{ float: 'left' }}>
-                      <strong>What Time:</strong> {serviceDetails.time}
-                    </Typography>
-                  </li> */}
-                </ul>
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={open}
+          onClose={() => setOpen(false)}
+          closeAfterTransition
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              timeout: 500,
+            },
+          }}
+        >
+          <Fade in={open}>
+            <Box sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 600,
+              bgcolor: 'background.paper',
+              boxShadow: '10px 10px 5px rgba(0, 0, 0, 50%)',
+              borderRadius: '10px',
+              p: 4,
+            }}>
+              <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px' }}>Add Booking Information</Typography>
+              <TextField
+                id="address"
+                label="Address"
+                fullWidth
+                margin="normal"
+                name="address"
+                value={formik.values.address}
+                onChange={formik.handleChange}
+                error={formik.touched.address && formik.errors.address}
+                helperText={formik.touched.address && formik.errors.address}
+              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DateTimePicker']}>
+                  <DateTimePicker
+                    label="Datetime picker"
+                    name='datetime'
+                    value={dayjs(formik.values.datetime)}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px' }}>
+                <Button sx={{ marginRight: '10px', backgroundColor: '#6dabb4' }} variant="contained" onClick={formik.handleSubmit} color="primary">Submit</Button>
+                <Button variant="outlined" sx={{ borderColor: '#6dabb4', color: '#6dabb4' }} onClick={() => setOpen(false)}>Cancel</Button>
               </div>
-              <div serviceName="guest-btns" style={{ margin: '0 auto' }}>
-                {isMember ? (
-                  <>
-                    {isBooked ? (
-                      <Button variant="contained" disabled>
-                        YOU BOOKED THIS SERVICE
-                      </Button>
-                    ) : (
-                      <>
-                        {serviceDetails.slotLeft > 0 ? (
-                          <Button variant="contained" onClick={handleBooking}>
-                            BOOK SERVICE
-                          </Button>
-                        ) : (
-                          <Button variant="contained" disabled>
-                            NO MORE SLOT
-                          </Button>
-                        )}
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <Typography variant="body2" style={{ float: 'left' }}>
-                    Login as member to book service.
-                  </Typography>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
-    <Footer/>
+            </Box>
+          </Fade>
+        </Modal>
+      </Container>
+      <Footer />
     </>
   );
 };

@@ -15,7 +15,6 @@ export default function ServiceManagement() {
     const { token } = useContext(AuthContext);
     const [services, setServicesData] = useState([]);
 
-
     useEffect(() => {
         fetchServicesData(token)
     }, [])
@@ -76,7 +75,7 @@ export default function ServiceManagement() {
             });
             if (response.ok) {
                 const data = await response.json();
-                setServicesData(data);
+                setServicesData(data.services);
             } else {
                 // Handle error response
                 const errorData = await response.json();
@@ -149,6 +148,7 @@ export default function ServiceManagement() {
         <div style={{ width: '95%', margin: '0px auto 20px auto', borderRadius: '20px' }}>
             <DataGrid
                 rows={rows}
+                getRowId={(row) => row._id}
                 columns={columns}
                 editMode="row"
                 components={{

@@ -26,7 +26,7 @@ export default function ProviderServiceManagement() {
     const [providerServiceId, setProviderServiceId] = useState(null);
 
     useEffect(() => {
-        fetchProviderServicesData(token)
+        fetchProviderServicesData()
     }, [])
     const fetchProviderServicesData = async () => {
         try {
@@ -205,7 +205,7 @@ export default function ProviderServiceManagement() {
                             icon: "success"
                         });
                         formik.resetForm();
-                        fetchProviderServicesData(token)
+                        fetchProviderServicesData()
                         setOpen(false);
                     } else {
                         const errorData = await response.json();
@@ -237,7 +237,7 @@ export default function ProviderServiceManagement() {
                         });
                         formik.resetForm();
                         setOpen(false);
-                        fetchProviderServicesData(token)
+                        fetchProviderServicesData()
                     } else {
                         const errorData = await response.json();
                         Swal.fire({
@@ -356,7 +356,7 @@ export default function ProviderServiceManagement() {
                         <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px' }}>{isEditMode ? 'Update Provider Service' : 'Add Provider Service'}</Typography>
                         <TextField
                             id="name"
-                            label="ProviderService Name"
+                            label="Service Name"
                             fullWidth
                             margin="normal"
                             name="name"

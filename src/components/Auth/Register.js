@@ -1,22 +1,23 @@
 import React from 'react';
-import { Container, Card, CardContent, TextField, Stack,InputLabel, Select,MenuItem, Button} from '@mui/material';
+import { Container, Card, CardContent, TextField, Stack, InputLabel, Select, MenuItem, Button } from '@mui/material';
 import { Link } from "react-router-dom"
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { FormControl } from '@mui/base';
 import SelectAutoWidth from './SelectAutoWidth.js';
+import Swal from 'sweetalert2';
 
 export default function Register() {
   const navigate = useNavigate();
 
   const formik = useFormik({
-    initialValues:{
-      fullName:"",
-      email:"",
-      image:"",
-      password:"",
-      role:"",
+    initialValues: {
+      fullName: "",
+      email: "",
+      image: "",
+      password: "",
+      role: "",
     },
     validationSchema: Yup.object({
       fullName: Yup.string().required("Required").min(2, "Must be 2 characters or more"),
@@ -41,23 +42,34 @@ export default function Register() {
 
       if (response.ok) {
         // Registration successful
-        alert('Registration successful');
+        Swal.fire({
+          title: "Registration successful",
+          icon: "success"
+        });
         navigate("/login")
       } else {
         // Handle registration error
         const errorData = await response.json();
-        alert(errorData.message);
+        Swal.fire({
+          icon: "error",
+          title: errorData.message,
+        });
       }
     } catch (error) {
       // Handle any other error occurred during registration
-      alert(error.message);
+      Swal.fire({
+        icon: "error",
+        title: error.message,
+      });
     }
   };
 
   return (
     <Container>
-      <div       style={{ width:'500px', display: 'flex', flexDirection: 'column', 
-                margin: '0 auto', paddingTop: '50px'}}>
+      <div style={{
+        width: '500px', display: 'flex', flexDirection: 'column',
+        margin: '0 auto', paddingTop: '50px'
+      }}>
         {/* <Card style={{ width: '100%', maxWidth: '500px' }}>
           <CardContent>
             <h4>Register</h4>
@@ -118,64 +130,64 @@ export default function Register() {
 
         {/*  */}
         <React.Fragment>
-        <div style={{textAlign: 'left'}}>
-            <p style={{fontSize:'24px', fontWeight:'bold'}}>Get started absolutely free.</p>
-            <p style={{fontSize:'16px', color:'#637381'}}>Free forever. No credit card needed.</p>
+          <div style={{ textAlign: 'left' }}>
+            <p style={{ fontSize: '24px', fontWeight: 'bold' }}>Get started absolutely free.</p>
+            <p style={{ fontSize: '16px', color: '#637381' }}>Free forever. No credit card needed.</p>
           </div>
-            <form onSubmit={formik.handleSubmit} action={<Link to="/login" />}>
+          <form onSubmit={formik.handleSubmit} action={<Link to="/login" />}>
 
 
             <TextField
-                    variant='outlined'
-                    color='secondary'
-                    required
-                    sx={{mb: 1}}
+              variant='outlined'
+              color='secondary'
+              required
+              sx={{ mb: 1 }}
 
-                id="fullName"
-                label="Full Name"
-                fullWidth
-                margin="normal"
-                name="fullName"
-                value={formik.values.fullName}
-                onChange={formik.handleChange}
-                error={formik.touched.fullName && Boolean(formik.errors.fullName)}
-                helperText={formik.touched.fullName && formik.errors.fullName}
-              />
+              id="fullName"
+              label="Full Name"
+              fullWidth
+              margin="normal"
+              name="fullName"
+              value={formik.values.fullName}
+              onChange={formik.handleChange}
+              error={formik.touched.fullName && Boolean(formik.errors.fullName)}
+              helperText={formik.touched.fullName && formik.errors.fullName}
+            />
             <TextField
-                    variant='outlined'
-                    color='secondary'
-                    required
-                    sx={{mb: 1}}
+              variant='outlined'
+              color='secondary'
+              required
+              sx={{ mb: 1 }}
 
-                    id="email"
-                    label="Email"
-                    fullWidth
-                    margin="normal"
-                    name="email"
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
-                    error={formik.touched.email && Boolean(formik.errors.email)}
-                    helperText={formik.touched.email && formik.errors.email}
-              />
+              id="email"
+              label="Email"
+              fullWidth
+              margin="normal"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
 
-<TextField
-                    variant='outlined'
-                    color='secondary'
-                    required
-                    sx={{mb: 2}}
+            <TextField
+              variant='outlined'
+              color='secondary'
+              required
+              sx={{ mb: 2 }}
 
-                    id="image"
-                label="Image"
-                fullWidth
-                margin="normal"
-                name="image"
-                value={formik.values.image}
-                onChange={formik.handleChange}
-                error={formik.touched.image && Boolean(formik.errors.image)}
-                helperText={formik.touched.image && formik.errors.image}
-              />
+              id="image"
+              label="Image"
+              fullWidth
+              margin="normal"
+              name="image"
+              value={formik.values.image}
+              onChange={formik.handleChange}
+              error={formik.touched.image && Boolean(formik.errors.image)}
+              helperText={formik.touched.image && formik.errors.image}
+            />
 
-{/* <FormControl sx={{mb: 2}}>
+            {/* <FormControl sx={{mb: 2}}>
 <InputLabel id="role">Role</InputLabel>
   <Select fullWidth
     labelId="demo-simple-select-label"
@@ -190,42 +202,44 @@ export default function Register() {
   </Select>
   </FormControl> */}
 
-  <SelectAutoWidth/>
+            <SelectAutoWidth />
 
-<TextField
-                    variant='outlined'
-                    color='secondary'
-                    required
-                    sx={{mb: 2}}
+            <TextField
+              variant='outlined'
+              color='secondary'
+              required
+              sx={{ mb: 2 }}
 
-                    id="password"
-                label="Password"
-                fullWidth
-                margin="normal"
-                name="password"
-                type="password"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                error={formik.touched.password && Boolean(formik.errors.password)}
-                helperText={formik.touched.password && formik.errors.password}
-              />
+              id="password"
+              label="Password"
+              fullWidth
+              margin="normal"
+              name="password"
+              type="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+            />
 
-                <Button  sx={{mb: 4}}
-                fullWidth style={{backgroundColor:"#6DABB4", color:'white', 
-                border: 'none', padding: '0.8rem', borderRadius:'0.4rem',}} 
-                variant="contained" type="submit">Sign up </Button>
-            </form>
-            <div style={{display:'flex', justifyContent:'space-between'}}>
-            <small style={{ fontWeight:'bold'}}>
-            Already have an account? <> </>
-              <Link to="/login" style={{color:'#6DABB4', textDecoration:'none'}}>Login</Link>
+            <Button sx={{ mb: 4 }}
+              fullWidth style={{
+                backgroundColor: "#6DABB4", color: 'white',
+                border: 'none', padding: '0.8rem', borderRadius: '0.4rem',
+              }}
+              variant="contained" type="submit">Sign up </Button>
+          </form>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <small style={{ fontWeight: 'bold' }}>
+              Already have an account? <> </>
+              <Link to="/login" style={{ color: '#6DABB4', textDecoration: 'none' }}>Login</Link>
             </small>
 
-            <small style={{ fontWeight:'bold'}}>
-              <Link to="/" style={{color:'#6DABB4', textDecoration:'none'}}>Back to Home</Link>
+            <small style={{ fontWeight: 'bold' }}>
+              <Link to="/" style={{ color: '#6DABB4', textDecoration: 'none' }}>Back to Home</Link>
             </small>
-            </div>
-     
+          </div>
+
         </React.Fragment>
         {/*  */}
       </div>

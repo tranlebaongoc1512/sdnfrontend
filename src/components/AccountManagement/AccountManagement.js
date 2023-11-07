@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 
 export default function AccountManagement() {
     const { token } = useContext(AuthContext);
+    console.log(token)
     const [accounts, setAccountsData] = useState([]);
 
     useEffect(() => {
@@ -35,7 +36,9 @@ export default function AccountManagement() {
     }
     const ban = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/service/banAccount/${id}`, {
+            console.log(token)
+            console.log(id)
+            const response = await fetch(`http://localhost:8000/api/user/banAccount/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,7 +78,7 @@ export default function AccountManagement() {
             });
             if (response.ok) {
                 const data = await response.json();
-                setAccountsData(data);
+                setAccountsData(data.users);
             } else {
                 // Handle error response
                 const errorData = await response.json();
@@ -144,6 +147,7 @@ export default function AccountManagement() {
             <DataGrid
                 rows={rows}
                 columns={columns}
+                getRowId={(row) => row._id}
                 editMode="row"
                 components={{
                     Toolbar: GridToolbarContainer,

@@ -1,13 +1,19 @@
 import React, { createContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState('');
-  const [userRole, setUserRole] = useState(''); 
+  const [userRole, setUserRole] = useState('');
   const navigate = useNavigate();
+  const setUserAuthentication = (token, role) => {
+    setIsAuthenticated(true)
+    setToken(token);
+    setUserRole(role);
+  }
   const login = async (email, password) => {
     try {
       const response = await fetch('http://localhost:8000/api/auth/login', {
@@ -24,15 +30,23 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         setToken(token);
         setUserRole(role);
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('role', role);
         navigate('/');
       } else {
         // Handle authentication error
         const errorData = await response.json();
-        alert(errorData.message);
+        Swal.fire({
+          icon: "error",
+          title: errorData.message,
+        });
       }
     } catch (error) {
       // Handle any other error occurred during login
-      alert(error.message);
+      Swal.fire({
+        icon: "error",
+        title: error.message,
+      });
     }
   };
 
@@ -50,15 +64,20 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       setToken('');
       setUserRole('');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('role');
       navigate('/');
     } catch (error) {
       // Handle any error occurred during logout
-      alert(error.message);
+      Swal.fire({
+        icon: "error",
+        title: error.message,
+      });
     }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, userRole, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, token, userRole, setUserAuthentication, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
