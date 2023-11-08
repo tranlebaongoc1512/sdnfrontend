@@ -6,26 +6,29 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography'
 import Navigation from '../Navigation/Navigation';
 import Footer from '../Footer/Footer';
+// import Carousel from 'react-material-ui-carousel'
+// import { Paper, Button } from '@mui/material'
 
 export default function Home() {
+
+  
   return (
     <>
     <Navigation />
     <Container className="container" maxWidth="xl" style={{padding: '10px', marginBottom: '160px'}}>
-        <Card className="film-tile">
-          <CardMedia
-            component="img"
-            src={`../assets/yoga.png`}
-            alt={'yoga'}
-            style={{ width: '60%', margin: '0 auto' }}
-          />
-        </Card>
-        <CardContent>
-            <Typography variant="h4" component="div">
-              Yoga for life
-            </Typography>
-          </CardContent>
+    <div style={{display:"flex", flexDirection:"column"}}>
+    <div style={{display:"grid",gridTemplateColumns:"2fr 1fr", backgroundColor:"green", height:"300px"}}>
+      <div style={{display:"flex",alignItems:"center", justifyContent:"center", flexDirection:"column"}}> <div>Header</div>
+      <div>Header 2</div>
+      <div>Detail</div>
+</div>
+<div>HInhg</div>
+     
+    </div>
+    <img src="https://cdn.animaapp.com/projects/6543ac513678c9141fbb9a38/releases/654bf6a3a8c5bd963a266510/img/frame-1.png"/>
+    </div>
     </Container>
+
     <Footer/>
     </>
   );

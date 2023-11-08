@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Navigation from '../Navigation/Navigation';
-import Footer from '../Footer/Footer';
-import { MenuItem, Select, TextField } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Navigation from "../Navigation/Navigation";
+import Footer from "../Footer/Footer";
+import { MenuItem, Select, TextField } from "@mui/material";
+import "./Service.css";
 
 export default function Service() {
   const [services, setServices] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
   const fetchCategoriesList = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/category/list', {
-        method: 'GET',
+      const response = await fetch("http://localhost:8000/api/category/list", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
       });
       if (response.ok) {
@@ -29,140 +30,151 @@ export default function Service() {
         setCategoryList(data.categories);
       } else {
         const errorData = await response.json();
-        console.log(errorData.message)
+        console.log(errorData.message);
       }
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
   };
   useEffect(() => {
-    fetchCategoriesList()
-    const baseURL = 'http://localhost:8000/api/service/list';
+    fetchCategoriesList();
+    const baseURL = "http://localhost:8000/api/service/list";
 
     fetch(baseURL)
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP Status: ${response.status}`);
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         setServices(data.services);
       })
-      .catch(error => console.log(error.message));
+      .catch((error) => console.log(error.message));
   }, []);
 
   const handleSearch = async (e) => {
     try {
-      const response = await fetch('http://localhost:8000/api/service/searchByName', {
-        method: 'POST',
-        body: JSON.stringify({ name: e.target.value }),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
+      const response = await fetch(
+        "http://localhost:8000/api/service/searchByName",
+        {
+          method: "POST",
+          body: JSON.stringify({ name: e.target.value }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setServices(data.services);
       } else {
         // Handle error response
         const errorData = await response.json();
-        console.log(errorData.message)
+        console.log(errorData.message);
       }
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
   };
   const handleSearchByCategory = async (e) => {
     try {
-      setSelectedCategory(e.target.value)
-      const response = await fetch('http://localhost:8000/api/service/searchByCategory', {
-        method: 'POST',
-        body: JSON.stringify({ name: e.target.value }),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
+      setSelectedCategory(e.target.value);
+      const response = await fetch(
+        "http://localhost:8000/api/service/searchByCategory",
+        {
+          method: "POST",
+          body: JSON.stringify({ name: e.target.value }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setServices(data.services);
       } else {
         // Handle error response
         const errorData = await response.json();
-        console.log(errorData.message)
+        console.log(errorData.message);
       }
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
   };
 
   return (
     <>
       <Navigation />
-      <Container sx={{ py: 8, mt: 1 }} maxWidth="xl" serviceName="content" style={{ marginBottom: '120px' }}>
-
+      <Container
+        sx={{ py: 6, mt: 0 }}
+        maxWidth="xl"
+        serviceName="content"
+        style={{ marginBottom: "120px" }}
+      >
         <Typography variant="h4" component="div" sx={{ mb: 3 }}>
           Services
         </Typography>
-        <TextField
-          onChange={handleSearch}
-          label="Search"
-        />
+
+        <div className="search" style={{float:'right', marginBottom: '50px', marginRight:'80px'}}>
+        <TextField 
+         style = {{width: 500}} onChange={handleSearch} 
+        label="Search" />
         <Select
           label="Category"
-          value={selectedCategory}
+     className=""
           onChange={handleSearchByCategory}
         >
           {categoryList.map((category) => (
-            <MenuItem key={category._id} value={category._id}>{category.name}</MenuItem>
+            <MenuItem key={category._id} value={category._id}>
+              {category.name}
+            </MenuItem>
           ))}
         </Select>
+        </div>
 
-        <Card
+        <Card />
 
-        />
-
-        <Grid container spacing={4}>
+        <div className="b-card">
           {services.map((card) => (
-            <Grid item key={card.id} xs={12} sm={6} md={4} xl={3}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-
-              >
-                <CardMedia
-                  component="div"
-                  sx={{
-                    pt: '56.25%',
-                  }}
-                  image={card.image}
-                />
-
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography gutterBottom variant="h5" component="h2">
+            <>
+              <div class="cardContainer">
+                <div class="cardImage">
+                  <img src={card.image} alt="" />
+                  <div class="cardAttendee">
+                    <div class="numberBox">$ {card.price}</div>
+                  </div>
+                </div>
+                <div className="cardContent">
+                  <div class="card-name" style={{ padding: "10px 0 10px 0" }}>
                     {card.name}
-                  </Typography>
-
-                  <Typography variant="body2" color="text.secondary">
-                    {card.providerId.fullName}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {card.categoryId.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {card.price}
-                  </Typography>
-                </CardContent>
-
-                <CardActions style={{ margin: '0 auto' }}>
+                  </div>
+                  <div class="card-fn" style={{ padding: "10px 0 10px 0" }}>
+                    <strong>By:</strong> {card.providerId.fullName}
+                  </div>
+                  <div class="card-cat" style={{ padding: "10px 0 10px 0" }}>
+                    <strong>Category:</strong> {card.categoryId.name}
+                  </div>
+                </div>
+                <CardActions
+                  style={{
+                    marginTop: "10px",
+                    backgroundColor: "#89CED8",
+                    borderRadius: "10px",
+                  }}
+                >
                   <Link to={`${card._id}`}>
-                    <Button serviceName="btn">Service Detail</Button>
+                    <Button serviceName="btn" style={{ color: "white" }}>
+                      Service Detail
+                    </Button>
                   </Link>
                 </CardActions>
-
-              </Card>
-            </Grid>
+              </div>
+            </>
           ))}
-        </Grid>
+        </div>
       </Container>
+
       <Footer />
     </>
   );
