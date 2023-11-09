@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Backdrop, Box, Button, Container, Fade, Grid, MenuItem, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Backdrop, Box, Fade, Grid, MenuItem, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
     DataGrid,
@@ -29,8 +29,8 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        fetchBookingsData()
-    }, [])
+        fetchBookingsData();
+    }, [token])
     const fetchBookingsByStatus = async (status) => {
         try {
             const response = await fetch(`http://localhost:8000/api/booking/listByStatus/${status}`, {
@@ -67,6 +67,7 @@ const Dashboard = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            
             if (response.ok) {
                 const data = await response.json();
                 setBookingsData(data.bookings);
@@ -178,7 +179,8 @@ const Dashboard = () => {
             ),
         },
     ];
-    const rows = bookings
+    const rows = bookings;
+    console.log(bookings);
 
     return (
         <>
@@ -243,6 +245,7 @@ const Dashboard = () => {
                         <DataGrid
                             rows={rows}
                             columns={columns}
+                            getRowId={(row) => row._id}
                             editMode="row"
                             components={{
                                 Toolbar: GridToolbarContainer,
