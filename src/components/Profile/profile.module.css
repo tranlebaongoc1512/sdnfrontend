@@ -41,7 +41,7 @@
 }
 .tabsLable {
   color: black !important;
-  font-weight: 600;
+  font-weight: 900 !important;
 }
 .tabContent {
   width: calc(100vw - 316px);

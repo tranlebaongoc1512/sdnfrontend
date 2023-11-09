@@ -247,12 +247,12 @@ const Profile = () => {
             </Tabs>
             <div>
               {value === 1 && <div className={styles.tabContent}>
-                <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px' }}>Change user info</Typography>
+                <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px', marginTop:'20px'}}>Change user info</Typography>
                 <TextField
+                  
                   id="fullName"
                   label="Full Name"
                   fullWidth
-                  margin="normal"
                   name="fullName"
                   value={formik.values.fullName}
                   onChange={formik.handleChange}
