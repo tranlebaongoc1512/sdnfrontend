@@ -51,7 +51,7 @@
 
 .cardImage {}
 
-img {
+.cardImage img {
     width: 300px;
     align-items: center;
     height: 220px;
