@@ -33,6 +33,7 @@ const ServiceDetails = () => {
   const [open, setOpen] = useState(false);
   const [datetime, setDatetime] = useState(null);
   const [parsedDatetime, setParsedDateTime] = useState("");
+  const [feedbacks, setFeedbacks] = useState([]);
 
   const fetchServiceData = async () => {
     try {
@@ -50,6 +51,31 @@ const ServiceDetails = () => {
         const data = await response.json();
         setServiceDetails(data.service);
         setIsLoading(false);
+      } else {
+        // Handle error response
+        const errorData = await response.json();
+        console.log(errorData.message);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const fetchFeedbacks = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch(
+        `http://localhost:8000/api/feedback/feedback/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setFeedbacks(data.feedback);
       } else {
         // Handle error response
         const errorData = await response.json();
@@ -87,6 +113,7 @@ const ServiceDetails = () => {
   useEffect(() => {
     fetchUserProfile();
     fetchServiceData();
+    fetchFeedbacks()
   }, []);
   useEffect(() => {
     if (user?.role === "customer" && id) {
@@ -149,7 +176,7 @@ const ServiceDetails = () => {
   return (
     <>
       <Navigation />
-      <Container sx={{ py: 6 }} maxWidth="xl" className="single" style={{marginBottom:'100px'}}>
+      <Container sx={{ py: 6 }} maxWidth="xl" className="single" style={{ marginBottom: '100px' }}>
         <Typography variant="h3" component="h3" mb={5}>
           {serviceDetails.name}
         </Typography>
@@ -341,13 +368,23 @@ const ServiceDetails = () => {
             </Box>
           </Fade>
         </Modal>
-        <div style={{marginTop:'15px', float:'left'}}>
+        <div style={{ marginTop: '15px', float: 'left' }}>
           <small style={{ fontWeight: "bold" }}>
             <Link to="/service" style={{ color: "#6DABB4", textDecoration: "none" }}>
               Back to service
             </Link>
           </small>
         </div>
+        {feedbacks.length > 0 && (
+          <div>
+            {feedbacks.map(feedback => (
+              <>
+                <p>{feedback.feedback}</p>
+                <p>{feedback.isReported === true ? 'Yes' : 'No'}</p>
+              </>
+            ))}
+          </div>
+        )}
       </Container>
       <Footer />
     </>

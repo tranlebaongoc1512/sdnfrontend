@@ -125,6 +125,12 @@ export default function AccountManagement() {
             renderCell: (params) => params.row.categoryId
         },
         {
+            field: 'isBanned',
+            headerName: 'isBanned',
+            width: 100,
+            renderCell: (params) => { if (params.row.isBanned === true) { return 'true' } else { return 'false' } }
+        },
+        {
             field: 'bans',
             headerName: 'Ban',
             width: 100,

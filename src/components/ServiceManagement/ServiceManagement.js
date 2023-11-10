@@ -15,9 +15,6 @@ export default function ServiceManagement() {
     const { token } = useContext(AuthContext);
     const [services, setServicesData] = useState([]);
 
-    useEffect(() => {
-        fetchServicesData(token)
-    }, [])
     const banService = (id) => {
         Swal.fire({
             title: "Are you sure you want to ban this service?",
@@ -91,6 +88,10 @@ export default function ServiceManagement() {
             });
         }
     };
+
+    useEffect(() => {
+        fetchServicesData()
+    }, [])
     const columns = [
         {
             field: 'image',
@@ -146,17 +147,22 @@ export default function ServiceManagement() {
 
     return (
         <div style={{ width: '95%', margin: '0px auto 20px auto', borderRadius: '20px' }}>
-            <DataGrid
-                rows={rows}
-                getRowId={(row) => row._id}
-                columns={columns}
-                editMode="row"
-                components={{
-                    Toolbar: GridToolbarContainer,
-                    ToolbarExport: GridToolbarExport,
-                }}
-                sx={{ backgroundColor: 'white' }}
-            />
+            {services.length > 0 ? (
+                <DataGrid
+                    rows={rows}
+                    getRowId={(row) => row._id}
+                    columns={columns}
+                    editMode="row"
+                    components={{
+                        Toolbar: GridToolbarContainer,
+                        ToolbarExport: GridToolbarExport,
+                    }}
+                    sx={{ backgroundColor: 'white' }}
+                />
+            ) : (<div>
+                <p>Empty list of service</p>
+            </div>)}
+
         </div>
     );
 }

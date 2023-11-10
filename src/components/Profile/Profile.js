@@ -21,6 +21,7 @@ import Navigation from '../Navigation/Navigation';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
+import CategoryManagement from '../CategoryManagement/CategoryManagement';
 
 const Profile = () => {
   const { token } = useContext(AuthContext);
@@ -190,6 +191,7 @@ const Profile = () => {
               <Tab label="Profile" className={value === 1 ? styles.outlined : styles.plain}>Profile</Tab>
               <Tab label="Account Management" className={value === 2 ? styles.outlined : styles.plain}>Account Management</Tab>
               <Tab label="Service Management" className={value === 3 ? styles.outlined : styles.plain}>Service Management</Tab>
+              <Tab label="Category Management" className={value === 4 ? styles.outlined : styles.plain}>Category Management</Tab>
             </Tabs>
             <div>
               {value === 1 && <div className={styles.tabContent}>
@@ -229,6 +231,9 @@ const Profile = () => {
               {value === 3 && <div className={styles.tabContent}>
                 <ServiceManagement />
               </div>}
+              {value === 4 && <div className={styles.tabContent}>
+                <CategoryManagement />
+              </div>}
             </div>
           </Box>
         )}
@@ -247,9 +252,9 @@ const Profile = () => {
             </Tabs>
             <div>
               {value === 1 && <div className={styles.tabContent}>
-                <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px', marginTop:'20px'}}>Change user info</Typography>
+                <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px', marginTop: '20px' }}>Change user info</Typography>
                 <TextField
-                  
+
                   id="fullName"
                   label="Full Name"
                   fullWidth

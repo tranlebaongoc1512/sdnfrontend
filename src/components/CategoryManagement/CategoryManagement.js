@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Avatar, Backdrop, Box, Button, Fade, Modal, TextField, Typography, MenuItem } from '@mui/material';
+import { Backdrop, Box, Button, Fade, Modal, TextField, Typography } from '@mui/material';
 import {
     DataGrid,
     GridActionsCellItem,
@@ -12,109 +12,21 @@ import {
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
 
 
-export default function ProviderServiceManagement() {
+export default function CategoryManagement() {
     const { token } = useContext(AuthContext);
-    const navigate = useNavigate()
-    const [providerServices, setProviderServicesData] = useState([]);
-
-    const [user, setUser] = useState(null);
+    const [categories, setCategoriesData] = useState([]);
     const [open, setOpen] = useState(false);
-    const [categoryList, setCategoryList] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [providerServiceData, setProviderServiceData] = useState(null);
-    const [isFetchProviderServiceData, setIsFetchProviderServiceData] = useState(false);
-    const [providerServiceId, setProviderServiceId] = useState(null);
+    const [categoryData, setCategoryData] = useState(null);
+    const [isFetchCategoryData, setIsFetchCategoryData] = useState(false);
+    const [categoryId, setCategoryId] = useState(null);
 
     useEffect(() => {
-        fetchProviderServicesData()
-        fetchUserProfile()
+        fetchCategoriesData()
     }, [])
-    const fetchUserProfile = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/api/user', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.ok) {
-                const userData = await response.json();
-                setUser(userData);
-            } else {
-                // Handle error response
-                const errorData = await response.json();
-                console.log(errorData.message);
-                navigate('/');
-            }
-        } catch (error) {
-            console.log(error.message);
-            Swal.fire({
-                icon: "error",
-                title: 'You are not allowed to access here',
-            });
-            navigate('/');
-        }
-    };
-    const fetchProviderServicesData = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/api/service/listProvider', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setProviderServicesData(data.services);
-            } else {
-                // Handle error response
-                const errorData = await response.json();
-                Swal.fire({
-                    icon: "error",
-                    title: errorData.message,
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: error.message,
-            });
-        }
-    };
-    const fetchProviderServiceData = async (id) => {
-        try {
-            const response = await fetch(`http://localhost:8000/api/service/detail/${id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setProviderServiceData(data.service);
-                setIsFetchProviderServiceData(true);
-            } else {
-                const errorData = await response.json();
-                Swal.fire({
-                    icon: "error",
-                    title: errorData.message,
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: error.message,
-            });
-            setOpen(false);
-        }
-    };
-    const fetchCategoriesList = async () => {
+    const fetchCategoriesData = async () => {
         try {
             const response = await fetch('http://localhost:8000/api/category/list', {
                 method: 'GET',
@@ -125,7 +37,35 @@ export default function ProviderServiceManagement() {
             });
             if (response.ok) {
                 const data = await response.json();
-                setCategoryList(data.categories);
+                setCategoriesData(data.categories);
+            } else {
+                // Handle error response
+                const errorData = await response.json();
+                Swal.fire({
+                    icon: "error",
+                    title: errorData.message,
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: error.message,
+            });
+        }
+    };
+    const fetchCategoryData = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/category/detail/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setCategoryData(data.category);
+                setIsFetchCategoryData(true);
             } else {
                 const errorData = await response.json();
                 Swal.fire({
@@ -141,22 +81,20 @@ export default function ProviderServiceManagement() {
             setOpen(false);
         }
     };
-    const addProviderService = () => {
-        fetchCategoriesList();
+    const addCategory = () => {
         setIsEditMode(false);
-        setProviderServiceId(null);
+        setCategoryId(null);
         setOpen(true)
     };
-    const editProviderService = (id) => {
+    const editCategory = (id) => {
         setIsEditMode(true);
-        fetchCategoriesList();
-        setProviderServiceId(id)
-        fetchProviderServiceData(id);
+        setCategoryId(id)
+        fetchCategoryData(id);
         setOpen(true);
     };
-    const deleteProviderService = (id) => {
+    const deleteCategory = (id) => {
         Swal.fire({
-            title: "Are you sure you want to delete this service?",
+            title: "Are you sure you want to delete this category?",
             text: "You won't be able to revert this!",
             icon: "warning",
             showCancelButton: true,
@@ -165,13 +103,13 @@ export default function ProviderServiceManagement() {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                deleteService(id)
+                deleteCate(id)
             }
         });
     };
-    const deleteService = async (id) => {
+    const deleteCate = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/service/delete/${id}`, {
+            const response = await fetch(`http://localhost:8000/api/category/delete/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -181,10 +119,10 @@ export default function ProviderServiceManagement() {
             if (response.ok) {
                 Swal.fire({
                     title: "Deleted!",
-                    text: "This service has been deleted.",
+                    text: "This category has been deleted.",
                     icon: "success"
                 });
-                fetchProviderServicesData()
+                fetchCategoriesData()
             } else {
                 // Handle error response
                 const errorData = await response.json();
@@ -201,30 +139,20 @@ export default function ProviderServiceManagement() {
         }
     }
     useEffect(() => {
-        if (isFetchProviderServiceData) {
+        if (isFetchCategoryData) {
             formik.setValues({
-                name: providerServiceData.name,
-                image: providerServiceData.image,
-                description: providerServiceData.description,
-                price: providerServiceData.price,
-                categoryId: providerServiceData.categoryId._id,
+                name: categoryData.name,
             });
         }
-    }, [isFetchProviderServiceData, providerServiceData]);
+    }, [isFetchCategoryData, categoryData]);
     const formik = useFormik({
         initialValues: {
             name: '',
-            image: '',
-            description: '',
-            price: 0,
-            categoryId: '',
-            providerId: '',
         },
         onSubmit: async (values) => {
-            values.providerId = user._id;
             if (isEditMode) {
                 try {
-                    const response = await fetch(`http://localhost:8000/api/service/update/${providerServiceId}`, {
+                    const response = await fetch(`http://localhost:8000/api/category/update/${categoryId}`, {
                         method: 'PUT',
                         body: JSON.stringify(values),
                         headers: {
@@ -234,11 +162,11 @@ export default function ProviderServiceManagement() {
                     });
                     if (response.ok) {
                         Swal.fire({
-                            title: "Service updated successfully",
+                            title: "Category updated successfully",
                             icon: "success"
                         });
                         formik.resetForm();
-                        fetchProviderServicesData()
+                        fetchCategoriesData()
                         setOpen(false);
                     } else {
                         const errorData = await response.json();
@@ -255,7 +183,7 @@ export default function ProviderServiceManagement() {
                 }
             } else {
                 try {
-                    const response = await fetch('http://localhost:8000/api/service/add', {
+                    const response = await fetch('http://localhost:8000/api/category/create', {
                         method: 'POST',
                         body: JSON.stringify(values),
                         headers: {
@@ -265,12 +193,12 @@ export default function ProviderServiceManagement() {
                     });
                     if (response.ok) {
                         Swal.fire({
-                            title: "Service added successfully",
+                            title: "Category added successfully",
                             icon: "success"
                         });
                         formik.resetForm();
                         setOpen(false);
-                        fetchProviderServicesData()
+                        fetchCategoriesData()
                     } else {
                         const errorData = await response.json();
                         Swal.fire({
@@ -288,41 +216,15 @@ export default function ProviderServiceManagement() {
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Required.'),
-            description: Yup.string().required('Required.'),
-            price: Yup.number().required('Required.').integer().min(1, 'Must be at least 1'),
-            image: Yup.string().required('Required.').url('Invalid URL format'),
-            categoryId: Yup.string().required('Required.'),
         }),
     });
 
     const columns = [
         {
-            field: 'image',
-            headerName: 'Image',
-            width: 100,
-            renderCell: (params) => (
-                <div>
-                    <Avatar alt={params.row.id} src={params.row.image} />
-                </div>
-            )
-        },
-        {
             field: 'name',
             headerName: 'Name',
             width: 200,
             renderCell: (params) => params.row.name
-        },
-        {
-            field: 'price',
-            headerName: 'Price',
-            width: 110,
-            renderCell: (params) => params.row.price
-        },
-        {
-            field: 'categoryId',
-            headerName: 'Category ID',
-            width: 100,
-            renderCell: (params) => params.row.categoryId.name
         },
         {
             field: 'actions',
@@ -333,24 +235,24 @@ export default function ProviderServiceManagement() {
                     <GridActionsCellItem
                         icon={<EditIcon />}
                         label="Edit"
-                        onClick={() => editProviderService(params.row._id)}
+                        onClick={() => editCategory(params.row._id)}
                     />
                     <GridActionsCellItem
                         icon={<DeleteIcon />}
                         label="Delete"
-                        onClick={() => deleteProviderService(params.row._id)}
+                        onClick={() => deleteCategory(params.row._id)}
                     />
                 </div>
             ),
         },
     ];
 
-    const rows = providerServices
+    const rows = categories
 
     return (
         <div style={{ width: '95%', margin: '0px auto 20px auto', borderRadius: '20px' }}>
-            <Button variant="outlined" onClick={() => addProviderService()} sx={{ margin: '10px 0 5px 0', backgroundColor: 'white', borderColor: '#6DABB4', color: 'black' }}>+ Add Provider Service</Button>
-            {providerServices.length > 0 ? (
+            <Button variant="outlined" onClick={() => addCategory()} sx={{ margin: '10px 0 5px 0', backgroundColor: 'white', borderColor: '#6DABB4', color: 'black' }}>+ Add Category</Button>
+            {categories.length > 0 ? (
                 <DataGrid
                     rows={rows}
                     columns={columns}
@@ -363,7 +265,7 @@ export default function ProviderServiceManagement() {
                     sx={{ backgroundColor: 'white' }}
                 />
             ) : (<div>
-                <p>Empty list of service</p>
+                <p>Empty list of category</p>
             </div>)}
             <Modal
                 aria-labelledby="transition-modal-title"
@@ -390,10 +292,10 @@ export default function ProviderServiceManagement() {
                         borderRadius: '10px',
                         p: 4,
                     }}>
-                        <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px' }}>{isEditMode ? 'Update Provider Service' : 'Add Provider Service'}</Typography>
+                        <Typography variant='h4' sx={{ borderBottom: '1px solid black', paddingBottom: '15px', marginBottom: '10px' }}>{isEditMode ? 'Update Category' : 'Add Category'}</Typography>
                         <TextField
                             id="name"
-                            label="Service Name"
+                            label="Name"
                             fullWidth
                             margin="normal"
                             name="name"
@@ -401,62 +303,6 @@ export default function ProviderServiceManagement() {
                             onChange={formik.handleChange}
                             error={formik.touched.name && formik.errors.name}
                             helperText={formik.touched.name && formik.errors.name}
-                        />
-                        <TextField
-                            id="price"
-                            label="Price"
-                            type="number"
-                            fullWidth
-                            margin="normal"
-                            name="price"
-                            value={formik.values.price}
-                            onChange={formik.handleChange}
-                            error={formik.touched.price && formik.errors.price}
-                            helperText={formik.touched.price && formik.errors.price}
-                        />
-                        <TextField
-                            id="image"
-                            label="Image URL"
-                            fullWidth
-                            margin="normal"
-                            name="image"
-                            value={formik.values.image}
-                            onChange={formik.handleChange}
-                            error={formik.touched.image && formik.errors.image}
-                            helperText={formik.touched.image && formik.errors.image}
-                        />
-
-                        {/* Category selection dropdown */}
-                        <TextField
-                            id="categoryId"
-                            label="Category"
-                            select
-                            fullWidth
-                            margin="normal"
-                            name="categoryId"
-                            value={formik.values.categoryId}
-                            onChange={formik.handleChange}
-                            error={formik.touched.categoryId && formik.errors.categoryId}
-                            helperText={formik.touched.categoryId && formik.errors.categoryId}
-                        >
-                            {categoryList.map((category) => (
-                                <MenuItem value={category._id} key={category._id}>
-                                    {category.name}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <TextField
-                            id="description"
-                            label="Description"
-                            fullWidth
-                            margin="normal"
-                            name="description"
-                            multiline
-                            rows={4}
-                            value={formik.values.description}
-                            onChange={formik.handleChange}
-                            error={formik.touched.description && formik.errors.description}
-                            helperText={formik.touched.description && formik.errors.description}
                         />
                         <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px' }}>
                             <Button sx={{ marginRight: '10px', backgroundColor: '#6dabb4' }} variant="contained" onClick={formik.handleSubmit} color="primary">Submit</Button>

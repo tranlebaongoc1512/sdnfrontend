@@ -9,9 +9,10 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Service from './components/Service/Service';
 import ServiceDetails from './components/ServiceDetail/ServiceDetail';
 import { useContext, useEffect } from 'react';
+import BookingHistory from './components/BookingHistory/BookingHistory';
 
 function App() {
-  const { setUserAuthentication } = useContext(AuthContext);
+  const { setUserAuthentication, userRole } = useContext(AuthContext);
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const role = sessionStorage.getItem('role');
@@ -29,7 +30,10 @@ function App() {
         <Route path='/register' element={<Register />}></Route>
 
         <Route path='/profile' element={<Profile />}></Route>
-        <Route path='/dashboard' element={<Dashboard />}></Route>
+        {userRole === 'provider' && (
+          <Route path='/dashboard' element={<Dashboard />}></Route>)}
+        {userRole === 'customer' && (
+          <Route path='/booking-history' element={<BookingHistory />}></Route>)}
         <Route path='/service/:id' element={<ServiceDetails />}></Route>
       </Routes>
     </div>

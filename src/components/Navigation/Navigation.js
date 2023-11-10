@@ -13,14 +13,6 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { AuthContext } from '../../context/AuthContext';
 
-import Avatar from '@mui/material/Avatar';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
-import Logout from '@mui/icons-material/Logout';
-
 const pages = ['Home', 'Service'];
 const settings = ['Profile'];
 
@@ -149,28 +141,58 @@ function Navigation() {
                       Logout
                     </Button>
                   </Box>
-                ) : (
-                  <Box>
-                    {settings.map((setting, index) => (
-                      <Button
-                        key={index}
-                        color="inherit"
-                        component={Link}
-                        to={`/${setting.toLowerCase()}`}
-                        sx={{ mx: 1 }}
-                      >
-                        {setting}
-                      </Button>
-                    ))}
+                ) : userRole === "customer" ? (
+                <Box>
+                  <Button
+                    color="inherit"
+                    component={Link}
+                    to={'/booking-history'}
+                    sx={{ mx: 1 }}
+                  >
+                    Bookings
+                  </Button>
+                  {settings.map((setting, index) => (
                     <Button
-                      key="logout"
+                      key={index}
                       color="inherit"
-                      onClick={logout}
+                      component={Link}
+                      to={`/${setting.toLowerCase()}`}
                       sx={{ mx: 1 }}
                     >
-                      Logout
+                      {setting}
                     </Button>
-                  </Box>
+                  ))}
+                  <Button
+                    key="logout"
+                    color="inherit"
+                    onClick={logout}
+                    sx={{ mx: 1 }}
+                  >
+                    Logout
+                  </Button>
+                </Box>
+                ):(
+                <Box>
+                  {settings.map((setting, index) => (
+                    <Button
+                      key={index}
+                      color="inherit"
+                      component={Link}
+                      to={`/${setting.toLowerCase()}`}
+                      sx={{ mx: 1 }}
+                    >
+                      {setting}
+                    </Button>
+                  ))}
+                  <Button
+                    key="logout"
+                    color="inherit"
+                    onClick={logout}
+                    sx={{ mx: 1 }}
+                  >
+                    Logout
+                  </Button>
+                </Box>
                 )}
               </Box>
             </Box>

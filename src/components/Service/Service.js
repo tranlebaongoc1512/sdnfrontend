@@ -3,9 +3,6 @@ import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Navigation from "../Navigation/Navigation";
@@ -16,7 +13,6 @@ import "./Service.css";
 export default function Service() {
   const [services, setServices] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
   const fetchCategoriesList = async () => {
     try {
       const response = await fetch("http://localhost:8000/api/category/list", {
@@ -79,7 +75,6 @@ export default function Service() {
   };
   const handleSearchByCategory = async (e) => {
     try {
-      setSelectedCategory(e.target.value);
       const response = await fetch(
         "http://localhost:8000/api/service/searchByCategory",
         {
@@ -138,21 +133,21 @@ export default function Service() {
         <div className="b-card">
           {services.map((card) => (
             <>
-              <div class="cardContainer">
-                <div class="cardImage">
+              <div className="cardContainer" key={card._id}>
+                <div className="cardImage">
                   <img src={card.image} alt="" />
-                  <div class="cardAttendee">
-                    <div class="numberBox">$ {card.price}</div>
+                  <div className="cardAttendee">
+                    <div className="numberBox">$ {card.price}</div>
                   </div>
                 </div>
                 <div className="cardContent">
-                  <div class="card-name" style={{ padding: "10px 0 10px 0" }}>
+                  <div className="card-name" style={{ padding: "10px 0 10px 0" }}>
                     {card.name}
                   </div>
-                  <div class="card-fn" style={{ padding: "10px 0 10px 0" }}>
+                  <div className="card-fn" style={{ padding: "10px 0 10px 0" }}>
                     <strong>By:</strong> {card.providerId.fullName}
                   </div>
-                  <div class="card-cat" style={{ padding: "10px 0 10px 0" }}>
+                  <div className="card-cat" style={{ padding: "10px 0 10px 0" }}>
                     <strong>Category:</strong> {card.categoryId.name}
                   </div>
                 </div>

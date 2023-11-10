@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Backdrop, Box, Fade, Grid, MenuItem, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Backdrop, Box, Button, Fade, Grid, MenuItem, Modal, Paper, TextField, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
     DataGrid,
@@ -12,25 +12,16 @@ import Navigation from '../Navigation/Navigation';
 import FooterComponent from '../Footer/Footer';
 import { AuthContext } from '../../context/AuthContext';
 import Swal from 'sweetalert2';
+import dayjs from 'dayjs';
 
 const Dashboard = () => {
     const { token } = useContext(AuthContext);
     const [bookings, setBookingsData] = useState([]);
 
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const [bookingData, setBookingData] = useState(null);
     const [bookingId, setBookingId] = useState(null);
-    // Số liệu mẫu cho 4 ô trên
-    const data = {
-        bookingsCompleted: 100,
-        bookingsCanceled: 20,
-        bookingsFinished: 80,
-        bookingsReported: 5,
-    };
-
-    useEffect(() => {
-        fetchBookingsData();
-    }, [token])
+    const [allBookingLengths, setAllBookingLengths] = useState(null)
     const fetchBookingsByStatus = async (status) => {
         try {
             const response = await fetch(`http://localhost:8000/api/booking/listByStatus/${status}`, {
@@ -67,9 +58,9 @@ const Dashboard = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            
             if (response.ok) {
                 const data = await response.json();
+                setAllBookingLengths(data.bookings.length)
                 setBookingsData(data.bookings);
             } else {
                 // Handle error response
@@ -113,6 +104,10 @@ const Dashboard = () => {
             setOpen(false);
         }
     };
+
+    useEffect(() => {
+        fetchBookingsData();
+    }, [])
     const editBooking = (id) => {
         setBookingId(id)
         fetchBookingData(id);
@@ -124,7 +119,8 @@ const Dashboard = () => {
                 method: 'PUT',
                 body: JSON.stringify({ status: e.target.value }),
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
                 },
             });
             if (response.ok) {
@@ -139,24 +135,26 @@ const Dashboard = () => {
         }
     };
     const columns = [
-        { field: 'id', headerName: 'ID', width: 40, renderCell: (params) => params.row.id },
         {
             field: 'name',
             headerName: 'Name',
             width: 200,
-            renderCell: (params) => params.row.name
+            renderCell: (params) => params.row.serviceId.name
         },
         {
             field: 'user',
             headerName: 'User',
             width: 200,
-            renderCell: (params) => params.row.user
+            renderCell: (params) => params.row.customerId.fullName
         },
         {
             field: 'datetime',
             headerName: 'Datetime',
             width: 200,
-            renderCell: (params) => params.row.datetime
+            renderCell: (params) => {
+                const formatDate = dayjs(params.row.datetime)
+                return formatDate.format("DD/MM/YYYY HH:mm:ss")
+            }
         },
         {
             field: 'status',
@@ -168,92 +166,125 @@ const Dashboard = () => {
             field: 'actions',
             headerName: 'Actions',
             width: 100,
-            renderCell: (params) => (
-                <div>
-                    <GridActionsCellItem
-                        icon={<EditIcon />}
-                        label="Edit"
-                        onClick={() => editBooking(params.row.id)}
-                    />
-                </div>
-            ),
+            renderCell: (params) => {
+                if (params.row.status !== 'completed') {
+                    return (
+                        <div>
+                            <GridActionsCellItem
+                                icon={<EditIcon />}
+                                label="Edit"
+                                onClick={() => editBooking(params.row._id)}
+                            />
+                        </div>
+                    )
+                }
+            },
         },
     ];
     const rows = bookings;
-    console.log(bookings);
 
     return (
         <>
             <Navigation />
             <div className={styles.container}>
                 <Grid container spacing={3}>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <Paper className={styles.paper}>
                             <button onClick={() => fetchBookingsData()} style={{ width: '100%', background: 'transparent', border: 'none' }}>
                                 <Typography variant="h6">All Bookings</Typography>
-                                <Typography variant="h4">{data.bookingsCompleted}</Typography>
+                                <Typography variant="h4">{allBookingLengths}</Typography>
                             </button>
                         </Paper>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <Paper className={styles.paper}>
-                            <button onClick={() => fetchBookingsByStatus('canceled')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
+                            <button onClick={() => fetchBookingsByStatus('pending')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
                                 <Grid container>
                                     <Grid item xs={3}>
-                                        <img src="./assets/img/cancel.png" alt="canceled" className={styles.image} />
+                                        <img src="./assets/img/pending.png" alt="pending" className={styles.image} />
                                     </Grid>
                                     <Grid item xs={9}>
-                                        <Typography variant="h6">Bookings Canceled</Typography>
-                                        <Typography variant="h4">{data.bookingsCanceled}</Typography>
+                                        <Typography variant="h6">Bookings Pending</Typography>
                                     </Grid>
                                 </Grid>
                             </button>
                         </Paper>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
+                        <Paper className={styles.paper}>
+                            <button onClick={() => fetchBookingsByStatus('confirmed')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
+                                <Grid container>
+                                    <Grid item xs={3}>
+                                        <img src="./assets/img/pending.png" alt="confirmed" className={styles.image} />
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <Typography variant="h6">Bookings Confirmed</Typography>
+                                    </Grid>
+                                </Grid>
+                            </button>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={2}>
                         <Paper className={styles.paper}>
                             <button onClick={() => fetchBookingsByStatus('completed')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
                                 <Grid container>
                                     <Grid item xs={3}>
-                                        <img src="./assets/img/finished.png" alt="completed" className={styles.image} />
+                                        <img src="./assets/img/completed.png" alt="completed" className={styles.image} />
                                     </Grid>
                                     <Grid item xs={9}>
                                         <Typography variant="h6">Bookings Completed</Typography>
-                                        <Typography variant="h4">{data.bookingsFinished}</Typography>
                                     </Grid>
                                 </Grid>
                             </button>
                         </Paper>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
+                        <Paper className={styles.paper}>
+                            <button onClick={() => fetchBookingsByStatus('canceled')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
+                                <Grid container>
+                                    <Grid item xs={3}>
+                                        <img src="./assets/img/canceled.png" alt="canceled" className={styles.image} />
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <Typography variant="h6">Bookings Canceled</Typography>
+                                    </Grid>
+                                </Grid>
+                            </button>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={2}>
                         <Paper className={styles.paper}>
                             <button onClick={() => fetchBookingsByStatus('reported')} style={{ width: '100%', background: 'transparent', border: 'none' }}>
                                 <Grid container>
                                     <Grid item xs={3}>
-                                        <img src="./assets/img/reported.png" alt="reported" className={styles.image} />
+                                        <img src="./assets/img/canceled.png" alt="reported" className={styles.image} />
                                     </Grid>
                                     <Grid item xs={9}>
                                         <Typography variant="h6">Bookings Reported</Typography>
-                                        <Typography variant="h4">{data.bookingsReported}</Typography>
                                     </Grid>
                                 </Grid>
                             </button>
                         </Paper>
                     </Grid>
                     {/* Bảng lịch sử dịch vụ */}
-                    <Grid item xs={12}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            getRowId={(row) => row._id}
-                            editMode="row"
-                            components={{
-                                Toolbar: GridToolbarContainer,
-                                ToolbarExport: GridToolbarExport,
-                            }}
-                            sx={{ backgroundColor: 'white' }}
-                        />
-                    </Grid>
+                    {bookings.length > 0 ? (
+                        <Grid item xs={12}>
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row._id}
+                                editMode="row"
+                                components={{
+                                    Toolbar: GridToolbarContainer,
+                                    ToolbarExport: GridToolbarExport,
+                                }}
+                                sx={{ backgroundColor: 'white' }}
+                            />
+                        </Grid>
+                    ) : (
+                        <div><p>Empty booking list</p></div>
+                    )}
+
                 </Grid>
                 <Modal
                     aria-labelledby="transition-modal-title"
@@ -289,34 +320,50 @@ const Dashboard = () => {
                                     <Typography>Customer Name: {bookingData?.customerId.fullName}</Typography>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Typography>Date and Time: {bookingData?.datetime}</Typography>
+                                    <Typography>Date and Time booking: {dayjs(bookingData?.datetime).format("DD/MM/YYYY HH:mm:ss")}</Typography>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography>Address: {bookingData?.address}</Typography>
                                 </Grid>
                             </Grid>
-                            <TextField
-                                id="status"
-                                label="Status"
-                                select
-                                fullWidth
-                                margin="normal"
-                                name="status"
-                                onChange={handleChangeStatus}
-                            >
-                                <MenuItem value='pending'>
-                                    Pending
-                                </MenuItem>
-                                <MenuItem value='confirmed'>
-                                    Confirmed
-                                </MenuItem>
-                                <MenuItem value='completed'>
-                                    Completed
-                                </MenuItem>
-                                <MenuItem value='cancel'>
-                                    Cancel
-                                </MenuItem>
-                            </TextField>
+                            {bookingData?.status === 'pending' ? (
+                                <TextField
+                                    label="Status"
+                                    select
+                                    fullWidth
+                                    margin="normal"
+                                    onChange={handleChangeStatus}
+                                    value={bookingData?.status}
+                                >
+
+                                    <MenuItem value='pending'>
+                                        Pending
+                                    </MenuItem>
+                                    <MenuItem value='confirmed'>
+                                        Confirmed
+                                    </MenuItem>
+
+                                </TextField>
+                            ) : bookingData?.status === 'confirmed' && (
+                                <TextField
+                                    label="Status"
+                                    select
+                                    fullWidth
+                                    margin="normal"
+                                    onChange={handleChangeStatus}
+                                    value={bookingData?.status}
+                                >
+                                    <MenuItem value='confirmed'>
+                                        Confirmed
+                                    </MenuItem>
+                                    <MenuItem value='completed'>
+                                        Completed
+                                    </MenuItem>
+                                </TextField>
+                            )}
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px' }}>
+                                <Button variant="outlined" sx={{ borderColor: '#6dabb4', color: '#6dabb4' }} onClick={() => setOpen(false)}>Exit</Button>
+                            </div>
                         </Box>
                     </Fade>
                 </Modal>
